@@ -7,25 +7,25 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
-public class MainActivity extends AppCompatActivity {
-    private Button newUserView;
+public class EnrollNewUser extends AppCompatActivity {
+    private Button enrollBack;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_enroll_new_user);
 
-        newUserView = (Button) findViewById(R.id.new_user_view);
+        enrollBack = (Button) findViewById(R.id.enrollBack);
 
-        newUserView.setOnClickListener(new View.OnClickListener() {
+        enrollBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                newUserView();
+                returnToMainPage();
             }
         });
     }
 
-    private void newUserView (){
-        Intent intent = new Intent(this, EnrollNewUser.class);
+    public void returnToMainPage(){
+        Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
     }
 }

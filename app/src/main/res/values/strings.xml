@@ -1,3 +1,11 @@
 <resources>
     <string name="app_name">EE408_Graduation</string>
+    <string name="new_user">Create New \nProfile</string>
+    <string name="existing_user">Use Existing \nProfile</string>
+    <string name="delete_user">Delete Existing \nProfile</string>
+    <string name="confirm">Confirm</string>
+    <string name="back">Back</string>
+    <string name="enter_username">Username</string>
+    <string name="play">Play</string>
+    <string name="delete">Delete</string>
 </resources>
