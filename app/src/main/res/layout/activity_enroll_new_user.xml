@@ -32,8 +32,8 @@
 
     <Button
         android:id="@+id/enrollBack"
-        android:layout_width="152dp"
-        android:layout_height="61dp"
+        android:layout_width="154dp"
+        android:layout_height="68dp"
         android:layout_marginTop="88dp"
         android:text="@string/back"
         android:textSize="24dp"

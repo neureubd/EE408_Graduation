@@ -6,4 +6,109 @@
     android:layout_height="match_parent"
     tools:context=".DeleteUser">
 
+    <TextView
+        android:id="@+id/textView4"
+        android:layout_width="218dp"
+        android:layout_height="52dp"
+        android:layout_marginTop="44dp"
+        android:text="@string/delete_user_view_header"
+        android:textSize="36dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <RadioGroup
+        android:id="@+id/radioGroup4"
+        android:layout_width="380dp"
+        android:layout_height="87dp"
+        android:layout_marginTop="60dp"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.483"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView4" >
+
+        <RadioButton
+            android:id="@+id/radioButton7"
+            android:layout_width="190dp"
+            android:layout_height="87dp"
+            android:text="RadioButton" />
+
+        <RadioButton
+            android:id="@+id/radioButton8"
+            android:layout_width="190dp"
+            android:layout_height="87dp"
+            android:text="RadioButton" />
+    </RadioGroup>
+
+    <RadioGroup
+        android:id="@+id/radioGroup5"
+        android:layout_width="380dp"
+        android:layout_height="87dp"
+        android:layout_marginStart="16dp"
+        android:orientation="horizontal"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/radioGroup4" >
+
+        <RadioButton
+            android:id="@+id/radioButton9"
+            android:layout_width="190dp"
+            android:layout_height="87dp"
+            android:text="RadioButton" />
+
+        <RadioButton
+            android:id="@+id/radioButton10"
+            android:layout_width="190dp"
+            android:layout_height="87dp"
+            android:text="RadioButton" />
+    </RadioGroup>
+
+    <RadioGroup
+        android:id="@+id/radioGroup6"
+        android:layout_width="380dp"
+        android:layout_height="87dp"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.483"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/radioGroup5" >
+
+        <RadioButton
+            android:id="@+id/radioButton11"
+            android:layout_width="190dp"
+            android:layout_height="87dp"
+            android:text="RadioButton"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <RadioButton
+            android:id="@+id/radioButton12"
+            android:layout_width="190dp"
+            android:layout_height="87dp"
+            android:text="RadioButton" />
+    </RadioGroup>
+
+    <Button
+        android:id="@+id/button2"
+        android:layout_width="154dp"
+        android:layout_height="68dp"
+        android:layout_marginTop="64dp"
+        android:text="@string/delete"
+        android:textSize="24dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/radioGroup6" />
+
+    <Button
+        android:id="@+id/deleteBack"
+        android:layout_width="154dp"
+        android:layout_height="68dp"
+        android:layout_marginTop="60dp"
+        android:text="@string/back"
+        android:textSize="24dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/button2" />
 </androidx.constraintlayout.widget.ConstraintLayout>

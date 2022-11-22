@@ -3,8 +3,10 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Users/brady/AndroidStudioProjects/EE408_Graduation/app/src/main/res/layout/activity_delete_user.xml" value="0.22" />
         <entry key="..\:/Users/brady/AndroidStudioProjects/EE408_Graduation/app/src/main/res/layout/activity_enroll_new_user.xml" value="0.22" />
         <entry key="..\:/Users/brady/AndroidStudioProjects/EE408_Graduation/app/src/main/res/layout/activity_main.xml" value="0.22" />
+        <entry key="..\:/Users/brady/AndroidStudioProjects/EE408_Graduation/app/src/main/res/layout/activity_select_user.xml" value="0.22" />
       </map>
     </option>
   </component>
