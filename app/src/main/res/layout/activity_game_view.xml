@@ -6,4 +6,21 @@
     android:layout_height="match_parent"
     tools:context=".GameView">
 
+    <Button
+        android:id="@+id/gameBack"
+        android:layout_width="70dp"
+        android:layout_height="68dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="32dp"
+        android:background="#00FFFFFF"
+        android:text="@string/gameback"
+        android:textColor="@color/red"
+        android:textSize="30sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.087"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+
 </androidx.constraintlayout.widget.ConstraintLayout>

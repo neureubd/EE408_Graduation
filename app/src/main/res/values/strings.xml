@@ -10,6 +10,7 @@
     <string name="delete">Delete</string>
     <string name="select_user_view_header">Select User</string>
     <string name="delete_user_view_header">Delete User</string>
+    <string name="gameback">X</string>
 
     <string name="profile1">Profile 1</string>
     <string name="profile2">Profile 2</string>
