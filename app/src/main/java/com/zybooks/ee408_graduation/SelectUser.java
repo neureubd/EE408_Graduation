@@ -12,6 +12,7 @@ import android.widget.RadioGroup;
 
 public class SelectUser extends AppCompatActivity {
     private Button selectBack;
+    private Button selectPlay;
     private RadioGroup rg1;
     private RadioGroup rg2;
 
@@ -27,11 +28,19 @@ public class SelectUser extends AppCompatActivity {
         rg1.setOnCheckedChangeListener(listener1);
         rg2.setOnCheckedChangeListener(listener2);
         selectBack = (Button) findViewById(R.id.selectBack);
+        selectPlay = (Button) findViewById(R.id.selectPlay);
         selectBack.setOnClickListener(view -> returnToMainPage());
+        selectPlay.setOnClickListener(view -> playGame());
+
     }
 
     public void returnToMainPage(){
         Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
+    }
+
+    public void playGame(){
+        Intent intent = new Intent(this, GameView.class);
         startActivity(intent);
     }
 
