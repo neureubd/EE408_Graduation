@@ -10,6 +10,7 @@ import android.widget.Button;
 public class MainActivity extends AppCompatActivity {
     private Button newUserView;
     private Button selectUserView;
+    private Button deleteUserView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -17,10 +18,13 @@ public class MainActivity extends AppCompatActivity {
 
         newUserView = (Button) findViewById(R.id.new_user_view);
         selectUserView = (Button) findViewById(R.id.existing_user_view);
+        deleteUserView = (Button) findViewById(R.id.delete_user_view);
 
         selectUserView.setOnClickListener(view -> existingUserView());
 
         newUserView.setOnClickListener(view -> newUserView());
+
+        deleteUserView.setOnClickListener(view -> deleteUserView());
     }
 
     private void newUserView (){
@@ -29,6 +33,10 @@ public class MainActivity extends AppCompatActivity {
     }
     private void existingUserView(){
         Intent intent = new Intent(this, SelectUser.class);
+        startActivity(intent);
+    }
+    private void deleteUserView(){
+        Intent intent = new Intent(this, DeleteUser.class);
         startActivity(intent);
     }
 }
