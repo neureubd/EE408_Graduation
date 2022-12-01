@@ -24,13 +24,14 @@ public class GameView extends AppCompatActivity {
         gameStart = (Button) findViewById(R.id.gameStart);
 
         ImageView square = findViewById(R.id.square);
-        Animation squareAnimation = AnimationUtils.loadAnimation(this, R.anim.book_anim1);
+        Animation squareUp = AnimationUtils.loadAnimation(this, R.anim.book_anim1);
+        Animation squareDown = AnimationUtils.loadAnimation(this, R.anim.book_down_anim);
 
         gameStart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                square.startAnimation(squareAnimation);
-                square.animate().alpha(1.0f);
+                square.startAnimation(squareUp);
+                //square.startAnimation(squareDown);
             }
         });
 
