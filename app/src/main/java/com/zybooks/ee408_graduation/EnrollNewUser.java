@@ -4,12 +4,22 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
+
+import com.android.volley.VolleyError;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class EnrollNewUser extends AppCompatActivity {
     private Button enrollBack;
     private Button confirmEnroll;
+    private EditText newUserName;
+    String baseUrl = "http://10.0.2.2:5000/";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -17,11 +27,12 @@ public class EnrollNewUser extends AppCompatActivity {
 
         enrollBack = (Button) findViewById(R.id.enrollBack);
         confirmEnroll = (Button) findViewById(R.id.enrollConfirm);
+        newUserName = (EditText) findViewById(R.id.newUserName);
 
         confirmEnroll.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                finishEnroll();
+                finishEnroll(newUserName.getText().toString());
             }
         });
 
@@ -32,7 +43,20 @@ public class EnrollNewUser extends AppCompatActivity {
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
     }
-    public void finishEnroll(){
+    public void finishEnroll(String newUserName){
+        JSONObject jsonParams = new JSONObject();
+        try {
+            jsonParams.put("username", newUserName);
+            new ApiRequest(EnrollNewUser.this, baseUrl + "create_user", jsonParams) {
+                @Override
+                public void PostCallback(JSONObject jsonObject, VolleyError volleyError) {
+                    String errString = jsonObject.optString("error");
+                    //Toast.makeText(EnrollNewUser.this.getApplicationContext(), "Error: " + errString, Toast.LENGTH_LONG).show();
+                }
+            };
+        }catch (JSONException e){
+            e.printStackTrace();
+        }
         Intent intent = new Intent(this, GameView.class);
         startActivity(intent);
     }
