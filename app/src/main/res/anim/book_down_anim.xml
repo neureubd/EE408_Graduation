@@ -9,16 +9,16 @@
         android:toXScale="4"
         android:fromYScale="4"
         android:toYScale="4"
-        android:duration="700"
-        android:startOffset="1500"
+        android:duration="500"
+        android:startOffset="500"
         android:fillAfter="true" />
 
     <translate
-        android:fromXDelta="260"
-        android:toXDelta="260"
-        android:fromYDelta="-500"
-        android:toYDelta="500"
+        android:fromXDelta="36%p"
+        android:toXDelta="36%p"
+        android:fromYDelta="-100%p"
+        android:toYDelta="60%p"
         android:duration="500"
-        android:startOffset="1500"
+        android:startOffset="500"
         android:fillAfter="true" />
 </set>

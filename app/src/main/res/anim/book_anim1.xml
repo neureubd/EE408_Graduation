@@ -13,14 +13,12 @@
             android:toXScale="1"
             android:fromYScale="1"
             android:toYScale="1"
-            android:duration="700"
-            android:startOffset="500" />
+            android:duration="500" />
 
         <translate
             android:fromXDelta="36%p"
             android:toXDelta="36%p"
             android:fromYDelta="15%p"
             android:toYDelta="-100%p"
-            android:duration="500"
-            android:startOffset="500" />
+            android:duration="500" />
 </set>

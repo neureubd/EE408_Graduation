@@ -9,7 +9,9 @@ import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.Animation;
+import android.view.animation.AnimationSet;
 import android.view.animation.AnimationUtils;
+import android.view.animation.LayoutAnimationController;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -17,11 +19,21 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
+
+import android.os.Handler;
 
 public class GameView extends AppCompatActivity {
     private Button gameBack;
     private Button gameStart;
+    final Handler handler = new Handler();
     private ImageView backGround;
+    private boolean bookDown;
+    private int count;
+    private int direction;
+    Random random = new Random();
+    private int targetCount;
+    private int cutDir;
 
     //Variables for collecting swipe data:
     float x = 0f;
@@ -31,6 +43,7 @@ public class GameView extends AppCompatActivity {
     List<Swipe<Float,Float,Long,Float,Float,Float>> preSwipe = new ArrayList<Swipe<Float,Float,Long,Float,Float,Float>>();
     String[] data = new String [31];
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,15 +53,36 @@ public class GameView extends AppCompatActivity {
         gameStart = (Button) findViewById(R.id.gameStart);
         backGround = (ImageView) findViewById(R.id.imageView2);
 
+        bookDown=false;
+
+        targetCount=100;
+
         ImageView square = findViewById(R.id.square);
         Animation squareUp = AnimationUtils.loadAnimation(this, R.anim.book_anim1);
         Animation squareDown = AnimationUtils.loadAnimation(this, R.anim.book_down_anim);
+        squareUp.setStartOffset(500);
+        squareDown.setFillAfter(true);
+
 
         gameStart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                count = 0;
+                direction= random.nextInt(8);
+                bookDown=false;
                 square.startAnimation(squareUp);
-                //square.startAnimation(squareDown);
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        square.startAnimation(squareDown);
+                    }
+                }, 1000);
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        bookDown=true;
+                    }
+                }, 2000);
             }
         });
 
@@ -60,42 +94,114 @@ public class GameView extends AppCompatActivity {
         });
 
         backGround.setOnTouchListener((v, event)->{
-            final float x = event.getX();
-            final float y = event.getY();
-            float lastXAxis = x;
-            float lastYAxis = y;
-            if(event.getAction() == MotionEvent.ACTION_DOWN){
-                swipeData.clear();
-                //Start timer when that is added to the data
-                addSwipeData(lastXAxis,lastYAxis,event.getEventTime(),event.getPressure(),event.getSize(), event.getOrientation());
+            if(bookDown){
+                final float x = event.getX();
+                final float y = event.getY();
+                float lastXAxis = x;
+                float lastYAxis = y;
+                if(event.getAction() == MotionEvent.ACTION_DOWN){
+                    swipeData.clear();
+                    //Start timer when that is added to the data
+                    addSwipeData(lastXAxis,lastYAxis,event.getEventTime(),event.getPressure(),event.getSize(), event.getOrientation());
+                }
+                else if(event.getAction() == MotionEvent.ACTION_MOVE){
+                    addSwipeData(lastXAxis,lastYAxis,event.getEventTime(),event.getPressure(),event.getSize(),event.getOrientation());
+                }
+                else if(event.getAction() == MotionEvent.ACTION_UP){
+                    addSwipeData(lastXAxis,lastYAxis,event.getEventTime(),event.getPressure(),event.getSize(),event.getOrientation());
+                    //set data string using swipeData and preSwipe
+                    data = setData(swipeData,preSwipe);
+                    //clear preSwipe
+                    preSwipe.clear();
+                    //set preSwipe to swipeData
+                    preSwipe = swipeData;
+                    //clear swipeData
+                    swipeData.clear();
+                    //send data via api
+                    //do what game logic tells us to do
+                    Toast.makeText(getApplicationContext(),"Data Collected",Toast.LENGTH_SHORT).show();
+                }
+                if(/*Within Certain Angle*/direction==0){
+                    cutDir=0;
+                }
+                else if(/*Within Certain Angle*/direction==1){
+                    cutDir=1;
+                }
+                else if(/*Within Certain Angle*/direction==2){
+                    cutDir=2;
+                }
+                else if(/*Within Certain Angle*/direction==3){
+                    cutDir=3;
+                }
+                else if(/*Within Certain Angle*/direction==4){
+                    cutDir=4;
+                }
+                else if(/*Within Certain Angle*/direction==5){
+                    cutDir=5;
+                }
+                else if(/*Within Certain Angle*/direction==6){
+                    cutDir=6;
+                }
+                else if(/*Within Certain Angle*/direction==7){
+                    cutDir=7;
+                }
+                else{
+                    //OUTPUT INCORRECT SIGNAL
+                }
+                if(cutDir==direction){
+                    //CUT BOOK
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            fireNewBook();
+                        }
+                    }, 1000);
+                    count+=count;
+                }
             }
-            else if(event.getAction() == MotionEvent.ACTION_MOVE){
-                addSwipeData(lastXAxis,lastYAxis,event.getEventTime(),event.getPressure(),event.getSize(),event.getOrientation());
-            }
-            else if(event.getAction() == MotionEvent.ACTION_UP){
-                addSwipeData(lastXAxis,lastYAxis,event.getEventTime(),event.getPressure(),event.getSize(),event.getOrientation());
-                //set data string using swipeData and preSwipe
-                data = setData(swipeData,preSwipe);
-                //clear preSwipe
-                preSwipe.clear();
-                //set preSwipe to swipeData
-                preSwipe = swipeData;
-                //clear swipeData
-                swipeData.clear();
-                //send data via api
-                //do what game logic tells us to do
-                Toast.makeText(getApplicationContext(),"Data Collected",Toast.LENGTH_SHORT).show();
+            else{
 
+            }
+            if(count==targetCount){
+                returnToMainPage();
             }
             return true;
         });
 
     }
 
+    private void setTargetCount(int num){
+        targetCount=num;
+    }
+
+    private void fireNewBook(){
+        ImageView square = findViewById(R.id.square);
+        Animation squareUp = AnimationUtils.loadAnimation(this, R.anim.book_anim1);
+        Animation squareDown = AnimationUtils.loadAnimation(this, R.anim.book_down_anim);
+        squareUp.setStartOffset(500);
+        squareDown.setFillAfter(true);
+        direction= random.nextInt(8);
+        bookDown=false;
+        square.startAnimation(squareUp);
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                square.startAnimation(squareDown);
+            }
+        }, 1000);
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                bookDown=true;
+            }
+        }, 2000);
+    }
+
     public void returnToMainPage(){
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
     }
+
     // Swipe is an custom class
     public class Swipe<Fst,Snd,Time,Pres,FSize,Ori> {
         private Fst fst;
@@ -300,7 +406,6 @@ public class GameView extends AppCompatActivity {
         dir = (float) (Math.atan2(y,x)/Math.PI*180);
         return dir;
     }
-
 }
 //Test. - Dalton
 /*
