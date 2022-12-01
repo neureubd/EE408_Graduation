@@ -25,12 +25,7 @@ public class EnrollNewUser extends AppCompatActivity {
             }
         });
 
-        enrollBack.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                returnToMainPage();
-            }
-        });
+        enrollBack.setOnClickListener(view -> returnToMainPage());
     }
 
     public void returnToMainPage(){
