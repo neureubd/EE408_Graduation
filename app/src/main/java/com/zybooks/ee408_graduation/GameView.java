@@ -4,11 +4,14 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.media.Image;
 import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.Animation;
+import android.view.animation.AnimationSet;
 import android.view.animation.AnimationUtils;
+import android.view.animation.LayoutAnimationController;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -21,17 +24,12 @@ import java.util.Random;
 
 import android.os.Handler;
 
-import com.android.volley.VolleyError;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
 public class GameView extends AppCompatActivity {
     private Button gameBack;
     private Button gameStart;
     final Handler handler = new Handler();
     private ImageView backGround;
-    private boolean bookDown;
+    private boolean bookReady;
     private int count;
     private int direction;
     Random random = new Random();
@@ -44,12 +42,10 @@ public class GameView extends AppCompatActivity {
     //Variables for collecting swipe data:
     float x = 0f;
     float y = 0f;
-    Swipe<Float, Float, Long, Float, Float, Float> swipe = new Swipe(0, 0, 0, 0, 0, 0);
-    List<Swipe<Float, Float, Long, Float, Float, Float>> swipeData = new ArrayList<Swipe<Float, Float, Long, Float, Float, Float>>();
-    List<Swipe<Float, Float, Long, Float, Float, Float>> preSwipe = new ArrayList<Swipe<Float, Float, Long, Float, Float, Float>>();
-    String[] swipeFeatures = new String[31];
-
-    String baseUrl = "http://10.0.2.2:5000/";
+    Swipe<Float,Float,Long,Float,Float,Float> swipe = new Swipe(0,0,0,0,0,0);
+    List<Swipe<Float,Float,Long,Float,Float,Float>> swipeData = new ArrayList<Swipe<Float,Float,Long,Float,Float,Float>>();
+    List<Swipe<Float,Float,Long,Float,Float,Float>> preSwipe = new ArrayList<Swipe<Float,Float,Long,Float,Float,Float>>();
+    String[] data = new String [31];
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
@@ -62,38 +58,36 @@ public class GameView extends AppCompatActivity {
         backGround = (ImageView) findViewById(R.id.imageView2);
         swipeCount = (TextView) findViewById(R.id.swipeCount);
 
-        String sessionUser = getIntent().getStringExtra("Username");
+        bookReady=false;
 
-        bookDown = false;
+        targetCount=100;
 
-        targetCount = 100;
-
-        ImageView square = findViewById(R.id.square);
-        Animation squareUp = AnimationUtils.loadAnimation(this, R.anim.book_anim1);
-        Animation squareDown = AnimationUtils.loadAnimation(this, R.anim.book_down_anim);
-        squareUp.setStartOffset(500);
-        squareDown.setFillAfter(true);
+        ImageView book1 = findViewById(R.id.book1);
+        Animation bookUp = AnimationUtils.loadAnimation(this, R.anim.book_anim1);
+        Animation bookDown = AnimationUtils.loadAnimation(this, R.anim.book_down_anim);
+        bookUp.setStartOffset(500);
+        bookDown.setFillAfter(true);
 
 
         gameStart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 count = 0;
-                swipeStr = "" + count;
+                swipeStr=""+count;
                 swipeCount.setText(swipeStr);
-                direction = random.nextInt(8);
-                bookDown = false;
-                square.startAnimation(squareUp);
+                direction= random.nextInt(8);
+                bookReady=false;
+                book1.startAnimation(bookUp);
                 handler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        square.startAnimation(squareDown);
+                        book1.startAnimation(bookDown);
                     }
                 }, 1000);
                 handler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        bookDown = true;
+                        bookReady=true;
                     }
                 }, 2000);
             }
@@ -106,22 +100,24 @@ public class GameView extends AppCompatActivity {
             }
         });
 
-        backGround.setOnTouchListener((v, event) -> {
-            if (bookDown) {
+        backGround.setOnTouchListener((v, event)->{
+            if(bookReady){
                 final float x = event.getX();
                 final float y = event.getY();
                 float lastXAxis = x;
                 float lastYAxis = y;
-                if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                if(event.getAction() == MotionEvent.ACTION_DOWN){
                     swipeData.clear();
                     //Start timer when that is added to the data
-                    addSwipeData(lastXAxis, lastYAxis, event.getEventTime(), event.getPressure(), event.getSize(), event.getOrientation());
-                } else if (event.getAction() == MotionEvent.ACTION_MOVE) {
-                    addSwipeData(lastXAxis, lastYAxis, event.getEventTime(), event.getPressure(), event.getSize(), event.getOrientation());
-                } else if (event.getAction() == MotionEvent.ACTION_UP) {
-                    addSwipeData(lastXAxis, lastYAxis, event.getEventTime(), event.getPressure(), event.getSize(), event.getOrientation());
+                    addSwipeData(lastXAxis,lastYAxis,event.getEventTime(),event.getPressure(),event.getSize(), event.getOrientation());
+                }
+                else if(event.getAction() == MotionEvent.ACTION_MOVE){
+                    addSwipeData(lastXAxis,lastYAxis,event.getEventTime(),event.getPressure(),event.getSize(),event.getOrientation());
+                }
+                else if(event.getAction() == MotionEvent.ACTION_UP){
+                    addSwipeData(lastXAxis,lastYAxis,event.getEventTime(),event.getPressure(),event.getSize(),event.getOrientation());
                     //set data string using swipeData and preSwipe
-                    swipeFeatures = setData(swipeData, preSwipe);
+                    data = setData(swipeData,preSwipe);
                     //clear preSwipe
                     preSwipe.clear();
                     //set preSwipe to swipeData
@@ -129,42 +125,50 @@ public class GameView extends AppCompatActivity {
                     //clear swipeData
                     swipeData.clear();
                     //send data via api
-                    sendSwipeData(sessionUser, swipeFeatures);
                     //do what game logic tells us to do
-                    Toast.makeText(getApplicationContext(), "Data Collected", Toast.LENGTH_SHORT).show();
-                    bookDown = false;
-                    swipeStarted = false;
+                    Toast.makeText(getApplicationContext(),"Data Collected",Toast.LENGTH_SHORT).show();
+                    bookReady=false;
+                    swipeStarted=false;
                 }
                 //DETERMINE ANGLE OF SWIPE
-                if (/*Within Certain Angle*/direction == 0) {
-                    cutDir = 0;
-                } else if (/*Within Certain Angle*/direction == 1) {
-                    cutDir = 1;
-                } else if (/*Within Certain Angle*/direction == 2) {
-                    cutDir = 2;
-                } else if (/*Within Certain Angle*/direction == 3) {
-                    cutDir = 3;
-                } else if (/*Within Certain Angle*/direction == 4) {
-                    cutDir = 4;
-                } else if (/*Within Certain Angle*/direction == 5) {
-                    cutDir = 5;
-                } else if (/*Within Certain Angle*/direction == 6) {
-                    cutDir = 6;
-                } else if (/*Within Certain Angle*/direction == 7) {
-                    cutDir = 7;
-                } else {
+                if(/*Within Certain Angle*/direction==0){
+                    cutDir=0;
+                }
+                else if(/*Within Certain Angle*/direction==1){
+                    cutDir=1;
+                }
+                else if(/*Within Certain Angle*/direction==2){
+                    cutDir=2;
+                }
+                else if(/*Within Certain Angle*/direction==3){
+                    cutDir=3;
+                }
+                else if(/*Within Certain Angle*/direction==4){
+                    cutDir=4;
+                }
+                else if(/*Within Certain Angle*/direction==5){
+                    cutDir=5;
+                }
+                else if(/*Within Certain Angle*/direction==6){
+                    cutDir=6;
+                }
+                else if(/*Within Certain Angle*/direction==7){
+                    cutDir=7;
+                }
+                else{
                     //OUTPUT INCORRECT SIGNAL
                 }
                 //IF ANGLE IS CORRECT, RESET AND ADD COUNT
-                if (cutDir == direction) {
-                    if (!swipeStarted) {
+                if(cutDir==direction){
+                    if(!swipeStarted) {
                         //CUT BOOK
-                        swipeStarted = true;
+
+                        swipeStarted=true;
                         handler.postDelayed(new Runnable() {
                             @Override
                             public void run() {
                                 fireNewBook();
-                                bookDown = false;
+                                bookReady = false;
                             }
                         }, 1000);
                         count = count + 1;
@@ -172,10 +176,11 @@ public class GameView extends AppCompatActivity {
                         swipeCount.setText(swipeStr);
                     }
                 }
-            } else {
+            }
+            else{
 
             }
-            if (count == targetCount) {
+            if(count==targetCount){
                 returnToMainPage();
             }
             return true;
@@ -183,17 +188,17 @@ public class GameView extends AppCompatActivity {
 
     }
 
-    private void setTargetCount(int num) {
-        targetCount = num;
+    private void setTargetCount(int num){
+        targetCount=num;
     }
 
-    private void fireNewBook() {
-        ImageView square = findViewById(R.id.square);
+    private void fireNewBook(){
+        ImageView square = findViewById(R.id.book1);
         Animation squareUp = AnimationUtils.loadAnimation(this, R.anim.book_anim1);
         Animation squareDown = AnimationUtils.loadAnimation(this, R.anim.book_down_anim);
         squareUp.setStartOffset(500);
         squareDown.setFillAfter(true);
-        direction = random.nextInt(8);
+        direction= random.nextInt(8);
         square.startAnimation(squareUp);
         handler.postDelayed(new Runnable() {
             @Override
@@ -204,26 +209,25 @@ public class GameView extends AppCompatActivity {
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                bookDown = true;
+                bookReady=true;
             }
         }, 2000);
     }
 
-    public void returnToMainPage() {
+    public void returnToMainPage(){
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
     }
 
     // Swipe is an custom class
-    public class Swipe<Fst, Snd, Time, Pres, FSize, Ori> {
+    public class Swipe<Fst,Snd,Time,Pres,FSize,Ori> {
         private Fst fst;
         private Snd snd;
         private Time time;
         private Pres pres;
         private FSize fSize;
         private Ori ori;
-
-        public Swipe(Fst fst, Snd snd, Time time, Pres pres, FSize fSize, Ori ori) {
+        public Swipe(Fst fst, Snd snd, Time time, Pres pres, FSize fSize, Ori ori){
             this.fst = fst;
             this.snd = snd;
             this.time = time;
@@ -231,173 +235,121 @@ public class GameView extends AppCompatActivity {
             this.fSize = fSize;
             this.ori = ori;
         }
-
-        public Fst getFst() {
-            return fst;
-        }
-
-        public Snd getSnd() {
-            return snd;
-        }
-
-        public Time getTime() {
-            return time;
-        }
-
-        public Pres getPres() {
-            return pres;
-        }
-
-        public FSize getFSize() {
-            return fSize;
-        }
-
-        public Ori getOri() {
-            return ori;
-        }
-
-        public void setFst(Fst fst) {
-            this.fst = fst;
-        }
-
-        public void setSnd(Snd snd) {
-            this.snd = snd;
-        }
-
-        public void setTime(Time time) {
-            this.time = time;
-        }
-
-        public void setPres(Pres pres) {
-            this.pres = pres;
-        }
-
-        public void setFSize(FSize fSize) {
-            this.fSize = fSize;
-        }
-
-        public void setOri(Ori ori) {
-            this.ori = ori;
-        }
+        public Fst getFst(){ return fst; }
+        public Snd getSnd(){ return snd; }
+        public Time getTime(){return time;}
+        public Pres getPres(){return pres;}
+        public FSize getFSize(){return fSize;}
+        public Ori getOri(){return ori;}
+        public void setFst(Fst fst){ this.fst = fst; }
+        public void setSnd(Snd snd){ this.snd = snd; }
+        public void setTime(Time time){ this.time = time; }
+        public void setPres(Pres pres){ this.pres = pres; }
+        public void setFSize(FSize fSize){this.fSize = fSize;}
+        public void setOri(Ori ori){this.ori = ori;}
     }
 
-    private void addSwipeData(float x, float y, long time, float pres, float fSize, float ori) {
-        Swipe swipe = new Swipe(x, y, time, pres, fSize, ori);
+    private void addSwipeData(float x, float y, long time, float pres, float fSize, float ori){
+        Swipe swipe = new Swipe(x,y,time,pres,fSize, ori);
         swipeData.add(swipe);
     }
 
-    public String[] setData(List<Swipe<Float, Float, Long, Float, Float, Float>> swipe, List<Swipe<Float, Float, Long, Float, Float, Float>> preSwipe) {
-        String[] data = new String[31];
+    public String[] setData(List<Swipe<Float,Float,Long,Float,Float,Float>> swipe, List<Swipe<Float,Float,Long,Float,Float,Float>> preSwipe){
+        String[] data = new String [31];
         // Not Done: 21,23
         //inter_stroke_time (time between strokes)
-        if (preSwipe.isEmpty()) {
-            data[0] = Long.toString(0);
-        } else {
-            data[0] = Long.toString(swipe.get(0).getTime() - preSwipe.get(preSwipe.size() - 1).getTime());
-        }
+        if(preSwipe.isEmpty()) {data[0] = Long.toString(0);}
+        else{data[0] = Long.toString(swipe.get(0).getTime()-preSwipe.get(preSwipe.size()-1).getTime());}
         //stroke_duration
-        data[1] = Long.toString(swipe.get(0).getTime() - swipe.get(swipe.size() - 1).getTime());
+        data[1] = Long.toString(swipe.get(0).getTime() - swipe.get(swipe.size()-1).getTime());
         //start_x
         data[2] = Float.toString(swipe.get(0).getFst());
         //start_y
         data[3] = Float.toString(swipe.get(0).getSnd());
         //stop_x
-        data[4] = Float.toString(swipe.get(swipe.size() - 1).getFst());
+        data[4] = Float.toString(swipe.get(swipe.size()-1).getFst());
         //stop_y
-        data[5] = Float.toString(swipe.get(swipe.size() - 1).getSnd());
+        data[5] = Float.toString(swipe.get(swipe.size()-1).getSnd());
         //direct_e2e_dist
-        data[6] = Float.toString(disOfTwoPoints(0, swipe.size() - 1, swipe));
+        data[6] = Float.toString(disOfTwoPoints(0,swipe.size()-1,swipe));
         //mean_resultant_length (length between each point averaged)
         float sum = 0;
-        for (int i = 0; i < swipe.size() - 1; i++) {
-            sum = sum + disOfTwoPoints(i, i + 1, swipe);
+        for(int i=0;i<swipe.size()-1;i++){
+            sum = sum + disOfTwoPoints(i, i+1,swipe);
         }
-        data[7] = Float.toString(sum / swipe.size());
+        data[7] = Float.toString(sum/swipe.size());
         //direction_enum
-        float dir = calcDirectionTwoPoints(0, swipe.size() - 1, swipe);
-        if (dir >= -Math.PI && dir < (-Math.PI / 2)) {
-            data[8] = Integer.toString(4);
-        }
-        if (dir <= 0 && dir > (-Math.PI / 2)) {
-            data[8] = Integer.toString(2);
-        }
-        if (dir > 0 && dir <= (Math.PI / 2)) {
-            data[8] = Integer.toString(3);
-        }
-        if (dir <= Math.PI && dir > (Math.PI / 2)) {
-            data[8] = Integer.toString(1);
-        }
+        float dir = calcDirectionTwoPoints(0,swipe.size()-1,swipe);
+        if(dir >= -Math.PI && dir < (-Math.PI/2)){data[8] = Integer.toString(4);}
+        if(dir <= 0 && dir > (-Math.PI/2)){data[8] = Integer.toString(2);}
+        if(dir > 0 && dir <= (Math.PI/2)){data[8] = Integer.toString(3);}
+        if(dir <= Math.PI && dir > (Math.PI/2)){data[8] = Integer.toString(1);}
         //dir_e2e_line
-        data[9] = Float.toString(calcDirectionTwoPoints(0, swipe.size() - 1, swipe));
+        data[9] = Float.toString(calcDirectionTwoPoints(0,swipe.size()-1,swipe));
         //20p_pairwise_velocity
-        data[10] = Float.toString(velPoint((int) Math.round(swipe.size() * .2), swipe));
+        data[10] = Float.toString(velPoint((int) Math.round(swipe.size()*.2),swipe));
         //50p_pairwise_velocity
-        data[11] = Float.toString(velPoint((int) Math.round(swipe.size() * .5), swipe));
-        ;
+        data[11] = Float.toString(velPoint((int) Math.round(swipe.size()*.5),swipe));;
         //80p_pairwise_velocity
-        data[12] = Float.toString(velPoint((int) Math.round(swipe.size() * .8), swipe));
-        ;
+        data[12] = Float.toString(velPoint((int) Math.round(swipe.size()*.8),swipe));;
         //20p_pairwise_acc
-        data[13] = Float.toString(accPoint((int) Math.round(swipe.size() * .2), swipe));
+        data[13] = Float.toString(accPoint((int) Math.round(swipe.size()*.2),swipe));
         //50p_pairwise_acc
-        data[14] = Float.toString(accPoint((int) Math.round(swipe.size() * .5), swipe));
+        data[14] = Float.toString(accPoint((int) Math.round(swipe.size()*.5),swipe));
         //80p_pairwise_acc
-        data[15] = Float.toString(accPoint((int) Math.round(swipe.size() * .8), swipe));
+        data[15] = Float.toString(accPoint((int) Math.round(swipe.size()*.8),swipe));
         //med_velocity_last3
         float[] last3Vel = new float[3];
         int count = 0;
-        for (int i = swipe.size() - 3; i < swipe.size(); i++) {
-            last3Vel[count] = velPoint(i, swipe);
+        for(int i = swipe.size()-3; i < swipe.size(); i++){
+            last3Vel[count] = velPoint(i,swipe);
             count++;
         }
         Arrays.sort(last3Vel);
         data[16] = Float.toString(last3Vel[1]);
         //lgst_dev_e2e_line
         float longestDist = 0;
-        for (int i = 0; i < swipe.size(); i++) {
-            if (devFromBestLineAtPoint(i, swipe) > longestDist) {
-                longestDist = devFromBestLineAtPoint(i, swipe);
-            }
-        }
+        for(int i = 0; i < swipe.size();i++){
+            if(devFromBestLineAtPoint(i,swipe)> longestDist){longestDist = devFromBestLineAtPoint(i, swipe);}}
         data[17] = Float.toString(longestDist);
         //20p_dev_e2e_line
-        data[18] = Float.toString(devFromBestLineAtPoint((int) Math.round(swipe.size() * .2), swipe));
+        data[18] = Float.toString(devFromBestLineAtPoint((int) Math.round(swipe.size()*.2), swipe));
         //50p_dev_e2e_line
-        data[19] = Float.toString(devFromBestLineAtPoint((int) Math.round(swipe.size() * .5), swipe));
+        data[19] = Float.toString(devFromBestLineAtPoint((int) Math.round(swipe.size()*.5), swipe));
         //80p_dev_e2e_line
-        data[20] = Float.toString(devFromBestLineAtPoint((int) Math.round(swipe.size() * .8), swipe));
+        data[20] = Float.toString(devFromBestLineAtPoint((int) Math.round(swipe.size()*.8), swipe));
         //average_direction
         float dirSum = 0;
-        for (int i = 0; i < swipe.size() - 1; i++) {
-            dirSum = dirSum + calcDirectionTwoPoints(i, i + 1, swipe);
+        for(int i =0; i< swipe.size()-1;i++){
+            dirSum = dirSum + calcDirectionTwoPoints(i, i+1, swipe);
         }
-        data[21] = Float.toString(dirSum / (swipe.size() - 1));
+        data[21] = Float.toString(dirSum/(swipe.size()-1));
         //trajectory_length
         float trajectoryLength = 0;
-        for (int i = 0; i < swipe.size() - 1; i++) {
-            trajectoryLength = trajectoryLength + disOfTwoPoints(i, i + 1, swipe);
+        for(int i = 0; i < swipe.size()-1; i++){
+            trajectoryLength = trajectoryLength + disOfTwoPoints(i,i+1,swipe);
         }
         data[22] = Float.toString(trajectoryLength);
         //ratio_e2e_dist_traj_length
-        data[23] = Float.toString(disOfTwoPoints(0, swipe.size() - 1, swipe) / trajectoryLength);
+        data[23] = Float.toString(disOfTwoPoints(0,swipe.size()-1,swipe)/trajectoryLength);
         //average_velocity
         float velSum = 0;
-        for (int i = 0; i < swipe.size(); i++) {
-            velSum = velSum + velPoint(i, swipe);
+        for(int i = 0; i<swipe.size();i++){
+            velSum = velSum + velPoint(i,swipe);
         }
-        data[24] = Float.toString(velSum / swipe.size());
+        data[24] = Float.toString(velSum/swipe.size());
         //median_acc_first5
         float accFirst5Sum = 0;
-        for (int i = 0; i < 5; i++) {
-            accFirst5Sum = accFirst5Sum + accPoint(i, swipe);
+        for(int i = 0; i < 5; i++){
+            accFirst5Sum = accFirst5Sum + accPoint(i,swipe);
         }
-        data[25] = Float.toString(accFirst5Sum / 5);
+        data[25] = Float.toString(accFirst5Sum/5);
         //midstroke_pressure
-        data[26] = Float.toString(swipe.get((int) Math.round(swipe.size() * .5)).getPres());
+        data[26] = Float.toString(swipe.get((int) Math.round(swipe.size()*.5)).getPres());
         //midstroke_area_covered
-        data[27] = Float.toString(swipe.get((int) Math.round(swipe.size() * .5)).getFSize());
+        data[27] = Float.toString(swipe.get((int) Math.round(swipe.size()*.5)).getFSize());
         //midstroke_finger_orientation
-        data[28] = Float.toString(swipe.get((int) Math.round(swipe.size() * .5)).getOri());
+        data[28] = Float.toString(swipe.get((int) Math.round(swipe.size()*.5)).getOri());
         //finger_orientation_changed
         data[29] = Float.toString(0); //TA said it was fine for this feature to be set to 0
         //phone_orientation
@@ -405,120 +357,83 @@ public class GameView extends AppCompatActivity {
         return data;
     }
 
-    public float velPoint(int point, List<Swipe<Float, Float, Long, Float, Float, Float>> swipe) {
+    public float velPoint(int point,List<Swipe<Float,Float,Long,Float,Float,Float>> swipe){
         float vel;
-        if (point == 0) {
-            vel = disOfTwoPoints(point, point + 1, swipe) / (swipe.get(point).getTime() - swipe.get(point + 1).getTime());
-        } else if (point == swipe.size() - 1) {
-            vel = disOfTwoPoints(point - 1, point, swipe) / (swipe.get(point - 1).getTime() - swipe.get(point).getTime());
-        } else {
-            vel = (disOfTwoPoints(point, point + 1, swipe) / (swipe.get(point).getTime() - swipe.get(point + 1).getTime()) +
-                    disOfTwoPoints(point - 1, point, swipe) / (swipe.get(point - 1).getTime() - swipe.get(point).getTime())) / 2;
+        if(point == 0){
+            vel = disOfTwoPoints(point, point+1, swipe)/(swipe.get(point).getTime()-swipe.get(point+1).getTime());
+        }
+        else if(point == swipe.size()-1){
+            vel = disOfTwoPoints(point-1, point, swipe)/(swipe.get(point-1).getTime()-swipe.get(point).getTime());
+        }
+        else{
+            vel = (disOfTwoPoints(point, point+1, swipe)/(swipe.get(point).getTime()-swipe.get(point+1).getTime())+
+                    disOfTwoPoints(point-1, point, swipe)/(swipe.get(point-1).getTime()-swipe.get(point).getTime()))/2;
         }
         return vel;
     }
-
-    public float accPoint(int point, List<Swipe<Float, Float, Long, Float, Float, Float>> swipe) {
+    public float accPoint(int point,List<Swipe<Float,Float,Long,Float,Float,Float>> swipe){
         float acc = 0;
         if (point == 0) {
-            acc = (velPoint(point, swipe) - velPoint(point + 1, swipe)) / (swipe.get(point).getTime() - swipe.get(point + 1).getTime());
-        } else if (point == swipe.size()) {
-            acc = (velPoint(point - 1, swipe) - velPoint(point, swipe)) / (swipe.get(point - 1).getTime() - swipe.get(point).getTime());
-        } else {
-            acc = ((velPoint(point, swipe) - velPoint(point + 1, swipe)) / (swipe.get(point).getTime() - swipe.get(point + 1).getTime()) +
-                    (velPoint(point - 1, swipe) - velPoint(point, swipe)) / (swipe.get(point - 1).getTime() - swipe.get(point).getTime())) / 2;
+            acc = (velPoint(point, swipe)-velPoint(point+1, swipe))/(swipe.get(point).getTime()-swipe.get(point+1).getTime());
+        }
+        else if(point == swipe.size()){
+            acc = (velPoint(point-1, swipe)-velPoint(point, swipe))/(swipe.get(point-1).getTime()-swipe.get(point).getTime());
+        }
+        else{
+            acc = ((velPoint(point, swipe)-velPoint(point+1, swipe))/(swipe.get(point).getTime()-swipe.get(point+1).getTime())+
+                    (velPoint(point-1, swipe)-velPoint(point, swipe))/(swipe.get(point-1).getTime()-swipe.get(point).getTime()))/2;
 
         }
         return acc;
     }
 
-    public float disOfTwoPoints(int point1, int point2, List<Swipe<Float, Float, Long, Float, Float, Float>> swipe) {
+    public float disOfTwoPoints(int point1, int point2, List<Swipe<Float,Float,Long,Float,Float,Float>> swipe){
         float dis = (float) Math.sqrt(
-                (float) Math.pow((swipe.get(point1).getFst() - swipe.get(point2).getFst()), 2) +
-                        (float) Math.pow(swipe.get(point1).getSnd() - swipe.get(point2).getSnd(), 2));
+                (float)Math.pow((swipe.get(point1).getFst()-swipe.get(point2).getFst()),2)+
+                        (float)Math.pow(swipe.get(point1).getSnd()-swipe.get(point2).getSnd(),2));
         return dis;
     }
 
-    public float devFromBestLineAtPoint(int point, List<Swipe<Float, Float, Long, Float, Float, Float>> swipe) {
+    public float devFromBestLineAtPoint(int point, List<Swipe<Float,Float,Long,Float,Float,Float>> swipe){
         float x1 = swipe.get(0).getFst();
         float y1 = swipe.get(0).getSnd();
-        float x2 = swipe.get(swipe.size() - 1).getFst();
-        float y2 = swipe.get(swipe.size() - 1).getSnd();
-        ;
+        float x2 = swipe.get(swipe.size()-1).getFst();
+        float y2 = swipe.get(swipe.size()-1).getSnd();;
         float x3 = swipe.get(point).getFst();
-        float y3 = swipe.get(point).getSnd();
-        ;
-        float px = x2 - x1;
-        float py = y2 - y1;
-        float temp = (px * px) + (py * py);
-        float u = ((x3 - x1) * px + (y3 - y1) * py) / (temp);
-        if (u > 1) {
-            u = 1;
-        } else if (u < 0) {
-            u = 0;
-        }
+        float y3 = swipe.get(point).getSnd();;
+        float px=x2-x1;
+        float py=y2-y1;
+        float temp=(px*px)+(py*py);
+        float u=((x3 - x1) * px + (y3 - y1) * py) / (temp);
+        if(u>1){u=1;}
+        else if(u<0){u=0;}
         float x = x1 + u * px;
         float y = y1 + u * py;
 
         float dx = x - x3;
         float dy = y - y3;
-        float dist = (float) Math.sqrt(dx * dx + dy * dy);
+        float dist = (float) Math.sqrt(dx*dx + dy*dy);
         return dist;
 
     }
-
-    public float calcDirectionTwoPoints(int point1, int point2, List<Swipe<Float, Float, Long, Float, Float, Float>> swipe) {
+    public float calcDirectionTwoPoints(int point1, int point2, List<Swipe<Float,Float,Long,Float,Float,Float>> swipe){
         float dir;
         float x = swipe.get(point2).getFst() - swipe.get(point1).getFst();
         float y = swipe.get(point2).getSnd() - swipe.get(point1).getSnd();
-        dir = (float) (Math.atan2(y, x) / Math.PI * 180);
+        dir = (float) (Math.atan2(y,x)/Math.PI*180);
         return dir;
-    }
-
-    public void sendSwipeData(String sessionUser, String[] swipeData) {
-        String[] dataHeaders = new String[]{"inter_stroke_time", "stroke_duration", "start_x",
-                "start_y", "stop_x", "stop_y", "direct_e2e_dist",
-                "mean_resultant_length", "direction_enum", "dir_e2e_line",
-                "20p_pairwise_velocity", "50p_pairwise_velocity",
-                "80p_pairwise_velocity", "20p_pairwise_acc", "50p_pairwise_acc",
-                "80p_pairwise_acc", "med_velocity_last3", "lgst_dev_e2e_line",
-                "20p_dev_e2e_line", "50p_dev_e2e_line", "80p_dev_e2e_line",
-                "average_direction", "trajectory_length", "ratio_e2e_dist_traj_length",
-                "average_velocity", "median_acc_first5", "midstroke_pressure",
-                "midstroke_area_covered", "midstroke_finger_orientation",
-                "finger_orientation_changed", "phone_orientation"};
-        JSONObject jsonParams = new JSONObject();
-        try {
-            // Put username
-            jsonParams.put("username", sessionUser);
-
-            // Put params:
-            for(int i = 0; i <31;i++) {
-                jsonParams.put(dataHeaders[i], swipeData[i]);
-            }
-
-            new ApiRequest(GameView.this, baseUrl + "create_user", jsonParams) {
-                @Override
-                public void PostCallback(JSONObject jsonObject, VolleyError volleyError) {
-                    String errString = jsonObject.optString("error");
-                    //Toast.makeText(EnrollNewUser.this.getApplicationContext(), "Error: " + errString, Toast.LENGTH_LONG).show();
-                }
-            };
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
     }
 }
 //Test. - Dalton
 /*
- * Notes for making the game
- * on start button summon book and arrow
- * when swipe book correct arrow gone
- * summon broken book
- * summon book and new arrow
- * new book appear
- * repeat...
- * when final number == goal number end game
- * */
+* Notes for making the game
+* on start button summon book and arrow
+* when swipe book correct arrow gone
+* summon broken book
+* summon book and new arrow
+* new book appear
+* repeat...
+* when final number == goal number end game
+* */
 
 // Swipe is an custom class
