@@ -29,7 +29,7 @@ public class GameView extends AppCompatActivity {
     private Button gameStart;
     final Handler handler = new Handler();
     private ImageView backGround;
-    private boolean bookDown;
+    private boolean bookReady;
     private int count;
     private int direction;
     Random random = new Random();
@@ -58,15 +58,15 @@ public class GameView extends AppCompatActivity {
         backGround = (ImageView) findViewById(R.id.imageView2);
         swipeCount = (TextView) findViewById(R.id.swipeCount);
 
-        bookDown=false;
+        bookReady=false;
 
         targetCount=100;
 
-        ImageView square = findViewById(R.id.square);
-        Animation squareUp = AnimationUtils.loadAnimation(this, R.anim.book_anim1);
-        Animation squareDown = AnimationUtils.loadAnimation(this, R.anim.book_down_anim);
-        squareUp.setStartOffset(500);
-        squareDown.setFillAfter(true);
+        ImageView book1 = findViewById(R.id.book1);
+        Animation bookUp = AnimationUtils.loadAnimation(this, R.anim.book_anim1);
+        Animation bookDown = AnimationUtils.loadAnimation(this, R.anim.book_down_anim);
+        bookUp.setStartOffset(500);
+        bookDown.setFillAfter(true);
 
 
         gameStart.setOnClickListener(new View.OnClickListener() {
@@ -76,18 +76,18 @@ public class GameView extends AppCompatActivity {
                 swipeStr=""+count;
                 swipeCount.setText(swipeStr);
                 direction= random.nextInt(8);
-                bookDown=false;
-                square.startAnimation(squareUp);
+                bookReady=false;
+                book1.startAnimation(bookUp);
                 handler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        square.startAnimation(squareDown);
+                        book1.startAnimation(bookDown);
                     }
                 }, 1000);
                 handler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        bookDown=true;
+                        bookReady=true;
                     }
                 }, 2000);
             }
@@ -101,7 +101,7 @@ public class GameView extends AppCompatActivity {
         });
 
         backGround.setOnTouchListener((v, event)->{
-            if(bookDown){
+            if(bookReady){
                 final float x = event.getX();
                 final float y = event.getY();
                 float lastXAxis = x;
@@ -127,7 +127,7 @@ public class GameView extends AppCompatActivity {
                     //send data via api
                     //do what game logic tells us to do
                     Toast.makeText(getApplicationContext(),"Data Collected",Toast.LENGTH_SHORT).show();
-                    bookDown=false;
+                    bookReady=false;
                     swipeStarted=false;
                 }
                 //DETERMINE ANGLE OF SWIPE
@@ -162,12 +162,13 @@ public class GameView extends AppCompatActivity {
                 if(cutDir==direction){
                     if(!swipeStarted) {
                         //CUT BOOK
+
                         swipeStarted=true;
                         handler.postDelayed(new Runnable() {
                             @Override
                             public void run() {
                                 fireNewBook();
-                                bookDown = false;
+                                bookReady = false;
                             }
                         }, 1000);
                         count = count + 1;
@@ -192,7 +193,7 @@ public class GameView extends AppCompatActivity {
     }
 
     private void fireNewBook(){
-        ImageView square = findViewById(R.id.square);
+        ImageView square = findViewById(R.id.book1);
         Animation squareUp = AnimationUtils.loadAnimation(this, R.anim.book_anim1);
         Animation squareDown = AnimationUtils.loadAnimation(this, R.anim.book_down_anim);
         squareUp.setStartOffset(500);
@@ -208,7 +209,7 @@ public class GameView extends AppCompatActivity {
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                bookDown=true;
+                bookReady=true;
             }
         }, 2000);
     }
