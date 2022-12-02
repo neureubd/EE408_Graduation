@@ -12,6 +12,7 @@ import android.widget.Button;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.VolleyError;
 
@@ -57,8 +58,26 @@ public class SelectUser extends AppCompatActivity {
         startActivity(intent);
     }
 
-    public void checkForUser(){
+    public void enrollNewUser(){
+        Intent intent = new Intent(this, EnrollNewUser.class);
+        startActivity(intent);
+    }
 
+    public void checkForUser(){
+        RadioButton rb = null;
+
+        if(rg1.getCheckedRadioButtonId() != -1){rb = (RadioButton) rg1.getChildAt(rg1.getCheckedRadioButtonId());}
+        else if(rg2.getCheckedRadioButtonId() != -1){rb = (RadioButton) rg2.getChildAt(rg1.getCheckedRadioButtonId());}
+        else{
+            Toast.makeText(getApplicationContext(), "No User Selected",Toast.LENGTH_LONG).show();
+            return;
+        }
+        // Check for user
+        if (rb.getText().toString().contains("Profile")) {
+            enrollNewUser();
+        } else {
+            // send user name to game view
+        }
     }
 
     public void getUserList(){ //rename
