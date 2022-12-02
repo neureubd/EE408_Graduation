@@ -21,6 +21,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
+import com.android.volley.VolleyError;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import android.os.Handler;
 
@@ -47,6 +51,8 @@ public class GameView extends AppCompatActivity {
     List<Swipe<Float,Float,Long,Float,Float,Float>> preSwipe = new ArrayList<Swipe<Float,Float,Long,Float,Float,Float>>();
     String[] data = new String [31];
 
+    String baseUrl = "http://10.0.2.2:5000/";
+
     @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,6 +63,8 @@ public class GameView extends AppCompatActivity {
         gameStart = (Button) findViewById(R.id.gameStart);
         backGround = (ImageView) findViewById(R.id.imageView2);
         swipeCount = (TextView) findViewById(R.id.swipeCount);
+
+        String sessionUser = getIntent().getStringExtra("Username");
 
         bookReady=false;
 
@@ -125,6 +133,7 @@ public class GameView extends AppCompatActivity {
                     //clear swipeData
                     swipeData.clear();
                     //send data via api
+                    sendSwipeData(sessionUser,data);
                     //do what game logic tells us to do
                     Toast.makeText(getApplicationContext(),"Data Collected",Toast.LENGTH_SHORT).show();
                     bookReady=false;
@@ -422,6 +431,40 @@ public class GameView extends AppCompatActivity {
         float y = swipe.get(point2).getSnd() - swipe.get(point1).getSnd();
         dir = (float) (Math.atan2(y,x)/Math.PI*180);
         return dir;
+    }
+
+    public void sendSwipeData(String sessionUser, String[] swipeData) {
+        String[] dataHeaders = new String[]{"inter_stroke_time", "stroke_duration", "start_x",
+                "start_y", "stop_x", "stop_y", "direct_e2e_dist",
+                "mean_resultant_length", "direction_enum", "dir_e2e_line",
+                "20p_pairwise_velocity", "50p_pairwise_velocity",
+                "80p_pairwise_velocity", "20p_pairwise_acc", "50p_pairwise_acc",
+                "80p_pairwise_acc", "med_velocity_last3", "lgst_dev_e2e_line",
+                "20p_dev_e2e_line", "50p_dev_e2e_line", "80p_dev_e2e_line",
+                "average_direction", "trajectory_length", "ratio_e2e_dist_traj_length",
+                "average_velocity", "median_acc_first5", "midstroke_pressure",
+                "midstroke_area_covered", "midstroke_finger_orientation",
+                "finger_orientation_changed", "phone_orientation"};
+        JSONObject jsonParams = new JSONObject();
+        try {
+            // Put username
+            jsonParams.put("username", sessionUser);
+
+            // Put params:
+            for(int i = 0; i <31;i++) {
+                jsonParams.put(dataHeaders[i], swipeData[i]);
+            }
+
+            new ApiRequest(GameView.this, baseUrl + "enroll_user", jsonParams) {
+                @Override
+                public void PostCallback(JSONObject jsonObject, VolleyError volleyError) {
+                    if(volleyError == null){String errString = jsonObject.optString("error");}
+                    //Toast.makeText(EnrollNewUser.this.getApplicationContext(), "Error: " + errString, Toast.LENGTH_LONG).show();
+                }
+            };
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 }
 //Test. - Dalton
