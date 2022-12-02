@@ -68,7 +68,7 @@ public class SelectUser extends AppCompatActivity {
         RadioButton rb = null;
 
         if(rg1.getCheckedRadioButtonId() != -1){rb = (RadioButton) findViewById(rg1.getCheckedRadioButtonId());}
-        else if(rg2.getCheckedRadioButtonId() != -1){rb = (RadioButton) findViewById(rg1.getCheckedRadioButtonId());}
+        else if(rg2.getCheckedRadioButtonId() != -1){rb = (RadioButton) findViewById(rg2.getCheckedRadioButtonId());}
         else{
             Toast.makeText(getApplicationContext(), "No User Selected",Toast.LENGTH_LONG).show();
             return;

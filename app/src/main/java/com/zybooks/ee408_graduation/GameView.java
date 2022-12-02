@@ -429,7 +429,7 @@ public class GameView extends AppCompatActivity {
         float dir;
         float x = swipe.get(point2).getFst() - swipe.get(point1).getFst();
         float y = swipe.get(point2).getSnd() - swipe.get(point1).getSnd();
-        dir = (float) (Math.atan2(y,x)/Math.PI*180);
+        dir = (float) (Math.atan2(y,x));
         return dir;
     }
 
