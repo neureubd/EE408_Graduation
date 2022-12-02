@@ -146,7 +146,7 @@ public class GameView extends AppCompatActivity {
                         sendSwipeData(sessionUser, gameType, data);
                     }else {swipeData.clear();}
                     //do what game logic tells us to do
-                    Toast.makeText(getApplicationContext(),"Data Collected",Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(getApplicationContext(),"Data Collected",Toast.LENGTH_SHORT).show();
                     bookReady=false;
                     swipeStarted=false;
                 }
@@ -488,31 +488,62 @@ public class GameView extends AppCompatActivity {
                 "average_velocity", "median_acc_first5", "midstroke_pressure",
                 "midstroke_area_covered", "midstroke_finger_orientation",
                 "finger_orientation_changed", "phone_orientation"};
-        if(gameType.equals("test")){callType = "test_user";}
-        else if(gameType.equals("enroll")){callType = "enroll_user";}
+        if(gameType.equals("test")){
+            callType = "test_user";
+            JSONObject jsonParams = new JSONObject();
+            try {
+                // Put username
+                jsonParams.put("username", sessionUser);
+
+                // Put params:
+                for(int i = 0; i <31;i++) {
+                    jsonParams.put(dataHeaders[i], swipeData[i]);
+                }
+
+                new ApiRequest(GameView.this, baseUrl + callType, jsonParams) {
+                    @Override
+                    public void PostCallback(JSONObject jsonObject, VolleyError volleyError) {
+                        Boolean testResult = jsonObject.optBoolean("prediction");
+                        if(testResult != null){
+                            Toast.makeText(GameView.this.getApplicationContext(), "Correct User: " + Boolean.toString(testResult), Toast.LENGTH_LONG).show();
+                        }
+                        if(volleyError == null){String errString = jsonObject.optString("error");}
+                    }
+                };
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        else if(
+                gameType.equals("enroll")){callType = "enroll_user";
+            JSONObject jsonParams = new JSONObject();
+            try {
+                // Put username
+                jsonParams.put("username", sessionUser);
+
+                // Put params:
+                for(int i = 0; i <31;i++) {
+                    jsonParams.put(dataHeaders[i], swipeData[i]);
+                }
+
+                new ApiRequest(GameView.this, baseUrl + callType, jsonParams) {
+                    @Override
+                    public void PostCallback(JSONObject jsonObject, VolleyError volleyError) {
+                        Boolean enrollStatus = jsonObject.optBoolean("trained");
+                        if(enrollStatus != null){
+                            Toast.makeText(GameView.this.getApplicationContext(), "Enrollment complete: " + Boolean.toString(enrollStatus), Toast.LENGTH_LONG).show();
+                        }
+                        if(volleyError == null){String errString = jsonObject.optString("error");}
+                    }
+                };
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
         else{
             Toast.makeText(GameView.this.getApplicationContext(), "Game not made correctly", Toast.LENGTH_LONG).show();
             callType = "";
             onBackPressed();
-        }
-        JSONObject jsonParams = new JSONObject();
-        try {
-            // Put username
-            jsonParams.put("username", sessionUser);
-
-            // Put params:
-            for(int i = 0; i <31;i++) {
-                jsonParams.put(dataHeaders[i], swipeData[i]);
-            }
-
-            new ApiRequest(GameView.this, baseUrl + callType, jsonParams) {
-                @Override
-                public void PostCallback(JSONObject jsonObject, VolleyError volleyError) {
-                    if(volleyError == null){String errString = jsonObject.optString("error");}
-                }
-            };
-        } catch (JSONException e) {
-            e.printStackTrace();
         }
     }
 }
