@@ -14,6 +14,7 @@ import android.view.animation.AnimationUtils;
 import android.view.animation.LayoutAnimationController;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -34,6 +35,9 @@ public class GameView extends AppCompatActivity {
     Random random = new Random();
     private int targetCount;
     private int cutDir;
+    private TextView swipeCount;
+    private String swipeStr;
+    private boolean swipeStarted;
 
     //Variables for collecting swipe data:
     float x = 0f;
@@ -52,6 +56,7 @@ public class GameView extends AppCompatActivity {
         gameBack = (Button) findViewById(R.id.gameBack);
         gameStart = (Button) findViewById(R.id.gameStart);
         backGround = (ImageView) findViewById(R.id.imageView2);
+        swipeCount = (TextView) findViewById(R.id.swipeCount);
 
         bookDown=false;
 
@@ -68,6 +73,8 @@ public class GameView extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 count = 0;
+                swipeStr=""+count;
+                swipeCount.setText(swipeStr);
                 direction= random.nextInt(8);
                 bookDown=false;
                 square.startAnimation(squareUp);
@@ -120,7 +127,10 @@ public class GameView extends AppCompatActivity {
                     //send data via api
                     //do what game logic tells us to do
                     Toast.makeText(getApplicationContext(),"Data Collected",Toast.LENGTH_SHORT).show();
+                    bookDown=false;
+                    swipeStarted=false;
                 }
+                //DETERMINE ANGLE OF SWIPE
                 if(/*Within Certain Angle*/direction==0){
                     cutDir=0;
                 }
@@ -148,15 +158,22 @@ public class GameView extends AppCompatActivity {
                 else{
                     //OUTPUT INCORRECT SIGNAL
                 }
+                //IF ANGLE IS CORRECT, RESET AND ADD COUNT
                 if(cutDir==direction){
-                    //CUT BOOK
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            fireNewBook();
-                        }
-                    }, 1000);
-                    count+=count;
+                    if(!swipeStarted) {
+                        //CUT BOOK
+                        swipeStarted=true;
+                        handler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                fireNewBook();
+                                bookDown = false;
+                            }
+                        }, 1000);
+                        count = count + 1;
+                        swipeStr = "" + count;
+                        swipeCount.setText(swipeStr);
+                    }
                 }
             }
             else{
@@ -181,7 +198,6 @@ public class GameView extends AppCompatActivity {
         squareUp.setStartOffset(500);
         squareDown.setFillAfter(true);
         direction= random.nextInt(8);
-        bookDown=false;
         square.startAnimation(squareUp);
         handler.postDelayed(new Runnable() {
             @Override
