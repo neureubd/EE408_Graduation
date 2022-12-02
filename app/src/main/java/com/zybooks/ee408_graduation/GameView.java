@@ -84,10 +84,6 @@ public class GameView extends AppCompatActivity {
             targetCount = 0;
         }
 
-        ImageView book1 = findViewById(R.id.book1);
-        Animation bookUp = AnimationUtils.loadAnimation(this, R.anim.book_anim1);
-        Animation bookDown = AnimationUtils.loadAnimation(this, R.anim.book_down_anim);
-
 
         book1 = findViewById(R.id.book1);
         arrow = findViewById(R.id.arrow);
