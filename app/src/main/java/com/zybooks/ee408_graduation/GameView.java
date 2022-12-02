@@ -149,35 +149,10 @@ public class GameView extends AppCompatActivity {
                     //Toast.makeText(getApplicationContext(),"Data Collected",Toast.LENGTH_SHORT).show();
                     bookReady=false;
                     swipeStarted=false;
+                    checkSwipeDir(data[9]);
                 }
                 //DETERMINE ANGLE OF SWIPE
-                if(/*Within Certain Angle*/direction==0){
-                    cutDir=0;
-                }
-                else if(/*Within Certain Angle*/direction==1){
-                    cutDir=1;
-                }
-                else if(/*Within Certain Angle*/direction==2){
-                    cutDir=2;
-                }
-                else if(/*Within Certain Angle*/direction==3){
-                    cutDir=3;
-                }
-                else if(/*Within Certain Angle*/direction==4){
-                    cutDir=4;
-                }
-                else if(/*Within Certain Angle*/direction==5){
-                    cutDir=5;
-                }
-                else if(/*Within Certain Angle*/direction==6){
-                    cutDir=6;
-                }
-                else if(/*Within Certain Angle*/direction==7){
-                    cutDir=7;
-                }
-                else{
-                    //OUTPUT INCORRECT SIGNAL
-                }
+
                 //IF ANGLE IS CORRECT, RESET AND ADD COUNT
                 if(cutDir==direction){
                     if(!swipeStarted) {
@@ -209,6 +184,39 @@ public class GameView extends AppCompatActivity {
 
     private void setTargetCount(int num){
         targetCount=num;
+    }
+
+    private void checkSwipeDir(String data){
+        double direc = Double.parseDouble(data);
+        direc=direc*180/Math.PI;
+        goalCount.setText(Double.toString(direc));
+        if( direc<22.5 && direc > -22.5  && direction==0){
+            //cutDir=0;
+        }
+        else if(direc>22.5 && direc < 67.5  &&direction==1){
+            //cutDir=1;
+        }
+        else if(direc<112.5 && direc > 67.5  &&direction==2){
+            //cutDir=2;
+        }
+        else if(direc<157.5 && direc > 112.5  &&direction==3){
+            //cutDir=3;
+        }
+        else if(direc<-157.5 || direc > 157.5  &&direction==4){
+            //cutDir=4;
+        }
+        else if(direc<-112.5 && direc > -157.5  &&direction==5){
+            //cutDir=5;
+        }
+        else if(direc<-67.5 && direc > -112.5  &&direction==6){
+            //cutDir=6;
+        }
+        else if(direc<-22.5 && direc > -67.5  &&direction==7){
+            //cutDir=7;
+        }
+        else{
+            //OUTPUT INCORRECT SIGNAL
+        }
     }
 
     private void setArrowRotation(int num){
