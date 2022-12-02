@@ -39,8 +39,8 @@ public class GameView extends AppCompatActivity {
     Random random = new Random();
     private int targetCount;
     private int cutDir;
-    private TextView swipeCount;
-    private String swipeStr;
+    private TextView swipeCount, goalCount;
+    private String swipeStr, targetStr;
     private boolean swipeStarted;
     private ImageView book1;
     private Animation bookUp;
@@ -69,6 +69,7 @@ public class GameView extends AppCompatActivity {
         gameStart = (Button) findViewById(R.id.gameStart);
         backGround = (ImageView) findViewById(R.id.imageView2);
         swipeCount = (TextView) findViewById(R.id.swipeCount);
+        goalCount = (TextView) findViewById(R.id.goalCount);
 
         String sessionUser = getIntent().getStringExtra("Username");
         String gameType = getIntent().getStringExtra("gameType");
@@ -84,7 +85,8 @@ public class GameView extends AppCompatActivity {
             targetCount = 0;
         }
 
-
+        targetStr=""+targetCount;
+        goalCount.setText(targetStr);
         book1 = findViewById(R.id.book1);
         arrow = findViewById(R.id.arrow);
         bookUp = AnimationUtils.loadAnimation(this, R.anim.book_anim1);
@@ -181,7 +183,6 @@ public class GameView extends AppCompatActivity {
                     if(!swipeStarted) {
                         //CUT BOOK
 
-                        swipeStarted=true;
                         handler.postDelayed(new Runnable() {
                             @Override
                             public void run() {
