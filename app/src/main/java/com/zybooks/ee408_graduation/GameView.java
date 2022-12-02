@@ -75,15 +75,19 @@ public class GameView extends AppCompatActivity {
 
         bookReady=false;
 
-        if(gameType.equals("test")) {
-            targetCount = 15;
-        }
-        else if(gameType.equals("enroll")){
-            targetCount = 25;
-        }
+        //Set target count
+        if(gameType.equals("test")){targetCount = 10;}
+        else if(gameType.equals("enroll")){targetCount = 20;}
         else{
-            targetCount = 10;
+            Toast.makeText(GameView.this.getApplicationContext(), "Game not made correctly", Toast.LENGTH_LONG).show();
+            onBackPressed();
+            targetCount = 0;
         }
+
+        ImageView book1 = findViewById(R.id.book1);
+        Animation bookUp = AnimationUtils.loadAnimation(this, R.anim.book_anim1);
+        Animation bookDown = AnimationUtils.loadAnimation(this, R.anim.book_down_anim);
+
 
         book1 = findViewById(R.id.book1);
         arrow = findViewById(R.id.arrow);
@@ -132,15 +136,17 @@ public class GameView extends AppCompatActivity {
                 else if(event.getAction() == MotionEvent.ACTION_UP){
                     addSwipeData(lastXAxis,lastYAxis,event.getEventTime(),event.getPressure(),event.getSize(),event.getOrientation());
                     //set data string using swipeData and preSwipe
-                    data = setData(swipeData,preSwipe);
-                    //clear preSwipe
-                    preSwipe.clear();
-                    //set preSwipe to swipeData
-                    preSwipe = swipeData;
-                    //clear swipeData
-                    swipeData.clear();
-                    //send data via api
-                    sendSwipeData(sessionUser,gameType,data);
+                    if(swipeData.size() > 1) {
+                        data = setData(swipeData, preSwipe);
+                        //clear preSwipe
+                        preSwipe.clear();
+                        //set preSwipe to swipeData
+                        preSwipe = swipeData;
+                        //clear swipeData
+                        swipeData.clear();
+                        //send data via api
+                        sendSwipeData(sessionUser, gameType, data);
+                    }else {swipeData.clear();}
                     //do what game logic tells us to do
                     Toast.makeText(getApplicationContext(),"Data Collected",Toast.LENGTH_SHORT).show();
                     bookReady=false;
@@ -329,37 +335,39 @@ public class GameView extends AppCompatActivity {
         //dir_e2e_line
         data[9] = Float.toString(calcDirectionTwoPoints(0,swipe.size()-1,swipe));
         //20p_pairwise_velocity
-        data[10] = Float.toString(velPoint((int) Math.round(swipe.size()*.2),swipe));
+        data[10] = Float.toString(velPoint((int) Math.round((swipe.size()-1)*.2),swipe));
         //50p_pairwise_velocity
-        data[11] = Float.toString(velPoint((int) Math.round(swipe.size()*.5),swipe));;
+        data[11] = Float.toString(velPoint((int) Math.round((swipe.size()-1)*.5),swipe));;
         //80p_pairwise_velocity
-        data[12] = Float.toString(velPoint((int) Math.round(swipe.size()*.8),swipe));;
+        data[12] = Float.toString(velPoint((int) Math.round((swipe.size()-1)*.8),swipe));;
         //20p_pairwise_acc
-        data[13] = Float.toString(accPoint((int) Math.round(swipe.size()*.2),swipe));
+        data[13] = Float.toString(accPoint((int) Math.round((swipe.size()-1)*.2),swipe));
         //50p_pairwise_acc
-        data[14] = Float.toString(accPoint((int) Math.round(swipe.size()*.5),swipe));
+        data[14] = Float.toString(accPoint((int) Math.round((swipe.size()-1)*.5),swipe));
         //80p_pairwise_acc
-        data[15] = Float.toString(accPoint((int) Math.round(swipe.size()*.8),swipe));
+        data[15] = Float.toString(accPoint((int) Math.round((swipe.size()-1)*.8),swipe));
         //med_velocity_last3
-        float[] last3Vel = new float[3];
-        int count = 0;
-        for(int i = swipe.size()-3; i < swipe.size(); i++){
-            last3Vel[count] = velPoint(i,swipe);
-            count++;
-        }
-        Arrays.sort(last3Vel);
-        data[16] = Float.toString(last3Vel[1]);
+        if(swipe.size() > 3) {
+            float[] last3Vel = new float[3];
+            int count = 0;
+            for (int i = swipe.size() - 3; i < swipe.size(); i++) {
+                last3Vel[count] = velPoint(i, swipe);
+                count++;
+            }
+            Arrays.sort(last3Vel);
+            data[16] = Float.toString(last3Vel[1]);
+        }else{data[16] = Float.toString(0);}
         //lgst_dev_e2e_line
         float longestDist = 0;
         for(int i = 0; i < swipe.size();i++){
             if(devFromBestLineAtPoint(i,swipe)> longestDist){longestDist = devFromBestLineAtPoint(i, swipe);}}
         data[17] = Float.toString(longestDist);
         //20p_dev_e2e_line
-        data[18] = Float.toString(devFromBestLineAtPoint((int) Math.round(swipe.size()*.2), swipe));
+        data[18] = Float.toString(devFromBestLineAtPoint((int) Math.round((swipe.size()-1)*.2), swipe));
         //50p_dev_e2e_line
-        data[19] = Float.toString(devFromBestLineAtPoint((int) Math.round(swipe.size()*.5), swipe));
+        data[19] = Float.toString(devFromBestLineAtPoint((int) Math.round((swipe.size()-1)*.5), swipe));
         //80p_dev_e2e_line
-        data[20] = Float.toString(devFromBestLineAtPoint((int) Math.round(swipe.size()*.8), swipe));
+        data[20] = Float.toString(devFromBestLineAtPoint((int) Math.round((swipe.size()-1)*.8), swipe));
         //average_direction
         float dirSum = 0;
         for(int i =0; i< swipe.size()-1;i++){
@@ -381,17 +389,19 @@ public class GameView extends AppCompatActivity {
         }
         data[24] = Float.toString(velSum/swipe.size());
         //median_acc_first5
-        float accFirst5Sum = 0;
-        for(int i = 0; i < 5; i++){
-            accFirst5Sum = accFirst5Sum + accPoint(i,swipe);
-        }
-        data[25] = Float.toString(accFirst5Sum/5);
+        if(swipe.size() > 5) {
+            float accFirst5Sum = 0;
+            for (int i = 0; i < 5; i++) {
+                accFirst5Sum = accFirst5Sum + accPoint(i, swipe);
+            }
+            data[25] = Float.toString(accFirst5Sum / 5);
+        }else{data[25] = Float.toString(0);}
         //midstroke_pressure
-        data[26] = Float.toString(swipe.get((int) Math.round(swipe.size()*.5)).getPres());
+        data[26] = Float.toString(swipe.get((int) Math.round((swipe.size()-1)*.5)).getPres());
         //midstroke_area_covered
-        data[27] = Float.toString(swipe.get((int) Math.round(swipe.size()*.5)).getFSize());
+        data[27] = Float.toString(swipe.get((int) Math.round((swipe.size()-1)*.5)).getFSize());
         //midstroke_finger_orientation
-        data[28] = Float.toString(swipe.get((int) Math.round(swipe.size()*.5)).getOri());
+        data[28] = Float.toString(swipe.get((int) Math.round((swipe.size()-1)*.5)).getOri());
         //finger_orientation_changed
         data[29] = Float.toString(0); //TA said it was fine for this feature to be set to 0
         //phone_orientation
@@ -401,15 +411,17 @@ public class GameView extends AppCompatActivity {
 
     public float velPoint(int point,List<Swipe<Float,Float,Long,Float,Float,Float>> swipe){
         float vel;
-        if(point == 0){
-            vel = disOfTwoPoints(point, point+1, swipe)/(swipe.get(point).getTime()-swipe.get(point+1).getTime());
-        }
-        else if(point == swipe.size()-1){
-            vel = disOfTwoPoints(point-1, point, swipe)/(swipe.get(point-1).getTime()-swipe.get(point).getTime());
-        }
-        else{
-            vel = (disOfTwoPoints(point, point+1, swipe)/(swipe.get(point).getTime()-swipe.get(point+1).getTime())+
-                    disOfTwoPoints(point-1, point, swipe)/(swipe.get(point-1).getTime()-swipe.get(point).getTime()))/2;
+        if(swipe.size() == 1){
+            vel = 0;
+        }else {
+            if (point == 0) {
+                vel = disOfTwoPoints(point, point + 1, swipe) / (swipe.get(point).getTime() - swipe.get(point + 1).getTime());
+            } else if (point == swipe.size() - 1) {
+                vel = disOfTwoPoints(point - 1, point, swipe) / (swipe.get(point - 1).getTime() - swipe.get(point).getTime());
+            } else {
+                vel = (disOfTwoPoints(point, point + 1, swipe) / (swipe.get(point).getTime() - swipe.get(point + 1).getTime()) +
+                        disOfTwoPoints(point - 1, point, swipe) / (swipe.get(point - 1).getTime() - swipe.get(point).getTime())) / 2;
+            }
         }
         return vel;
     }
@@ -418,7 +430,7 @@ public class GameView extends AppCompatActivity {
         if (point == 0) {
             acc = (velPoint(point, swipe)-velPoint(point+1, swipe))/(swipe.get(point).getTime()-swipe.get(point+1).getTime());
         }
-        else if(point == swipe.size()){
+        else if(point == swipe.size()-1){
             acc = (velPoint(point-1, swipe)-velPoint(point, swipe))/(swipe.get(point-1).getTime()-swipe.get(point).getTime());
         }
         else{
@@ -442,7 +454,7 @@ public class GameView extends AppCompatActivity {
         float x2 = swipe.get(swipe.size()-1).getFst();
         float y2 = swipe.get(swipe.size()-1).getSnd();;
         float x3 = swipe.get(point).getFst();
-        float y3 = swipe.get(point).getSnd();
+        float y3 = swipe.get(point).getSnd();;
         float px=x2-x1;
         float py=y2-y1;
         float temp=(px*px)+(py*py);
