@@ -42,6 +42,12 @@ public class GameView extends AppCompatActivity {
     private TextView swipeCount;
     private String swipeStr;
     private boolean swipeStarted;
+    private ImageView book1;
+    private Animation bookUp;
+    private Animation bookDown;
+    private Animation arrowDown;
+    private ImageView arrow;
+    private Animation arrowUp;
 
     //Variables for collecting swipe data:
     float x = 0f;
@@ -69,15 +75,26 @@ public class GameView extends AppCompatActivity {
 
         bookReady=false;
 
-        //Set target count
+        if(gameType.equals("test")) {
+            targetCount = 15;
+        }
+        else if(gameType.equals("enroll")){
+            targetCount = 25;
+        }
+        else{
+            targetCount = 10;
+        }
 
-        targetCount=100;
-
-        ImageView book1 = findViewById(R.id.book1);
-        Animation bookUp = AnimationUtils.loadAnimation(this, R.anim.book_anim1);
-        Animation bookDown = AnimationUtils.loadAnimation(this, R.anim.book_down_anim);
+        book1 = findViewById(R.id.book1);
+        arrow = findViewById(R.id.arrow);
+        bookUp = AnimationUtils.loadAnimation(this, R.anim.book_anim1);
+        arrowUp = AnimationUtils.loadAnimation(this, R.anim.arrow_anim_up);
+        bookDown = AnimationUtils.loadAnimation(this, R.anim.book_down_anim);
+        arrowDown = AnimationUtils.loadAnimation(this, R.anim.book_down_anim);
         bookUp.setStartOffset(500);
+        arrowUp.setStartOffset(500);
         bookDown.setFillAfter(true);
+        arrowDown.setFillAfter(true);
 
 
         gameStart.setOnClickListener(new View.OnClickListener() {
@@ -86,21 +103,7 @@ public class GameView extends AppCompatActivity {
                 count = 0;
                 swipeStr=""+count;
                 swipeCount.setText(swipeStr);
-                direction= random.nextInt(8);
-                bookReady=false;
-                book1.startAnimation(bookUp);
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        book1.startAnimation(bookDown);
-                    }
-                }, 1000);
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        bookReady=true;
-                    }
-                }, 2000);
+                fireNewBook();
             }
         });
 
@@ -112,6 +115,7 @@ public class GameView extends AppCompatActivity {
         });
 
         backGround.setOnTouchListener((v, event)->{
+            swipeStarted=true;
             if(bookReady){
                 final float x = event.getX();
                 final float y = event.getY();
@@ -204,18 +208,44 @@ public class GameView extends AppCompatActivity {
         targetCount=num;
     }
 
+    private void setArrowRotation(int num){
+        if(num==0){
+            arrow.setRotation(0);
+        }
+        else if(num==1){
+            arrow.setRotation(45);
+        }
+        else if(num==2){
+            arrow.setRotation(90);
+        }
+        else if(num==3){
+            arrow.setRotation(135);
+        }
+        else if(num==4){
+            arrow.setRotation(180);
+        }
+        else if(num==5){
+            arrow.setRotation(225);
+        }
+        else if(num==6){
+            arrow.setRotation(270);
+        }
+        else{
+            arrow.setRotation(315);
+        }
+    }
+
     private void fireNewBook(){
-        ImageView square = findViewById(R.id.book1);
-        Animation squareUp = AnimationUtils.loadAnimation(this, R.anim.book_anim1);
-        Animation squareDown = AnimationUtils.loadAnimation(this, R.anim.book_down_anim);
-        squareUp.setStartOffset(500);
-        squareDown.setFillAfter(true);
         direction= random.nextInt(8);
-        square.startAnimation(squareUp);
+        setArrowRotation(direction);
+        bookReady=false;
+        book1.startAnimation(bookUp);
+        arrow.startAnimation(arrowUp);
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                square.startAnimation(squareDown);
+                book1.startAnimation(bookDown);
+                arrow.startAnimation(arrowDown);
             }
         }, 1000);
         handler.postDelayed(new Runnable() {
@@ -371,10 +401,7 @@ public class GameView extends AppCompatActivity {
 
     public float velPoint(int point,List<Swipe<Float,Float,Long,Float,Float,Float>> swipe){
         float vel;
-        if(swipe.size() == 1){
-            vel = 0;
-        }
-        else if(point == 0){
+        if(point == 0){
             vel = disOfTwoPoints(point, point+1, swipe)/(swipe.get(point).getTime()-swipe.get(point+1).getTime());
         }
         else if(point == swipe.size()-1){
@@ -415,7 +442,7 @@ public class GameView extends AppCompatActivity {
         float x2 = swipe.get(swipe.size()-1).getFst();
         float y2 = swipe.get(swipe.size()-1).getSnd();;
         float x3 = swipe.get(point).getFst();
-        float y3 = swipe.get(point).getSnd();;
+        float y3 = swipe.get(point).getSnd();
         float px=x2-x1;
         float py=y2-y1;
         float temp=(px*px)+(py*py);
