@@ -134,7 +134,7 @@ public class GameView extends AppCompatActivity {
                 else if(event.getAction() == MotionEvent.ACTION_UP){
                     addSwipeData(lastXAxis,lastYAxis,event.getEventTime(),event.getPressure(),event.getSize(),event.getOrientation());
                     //set data string using swipeData and preSwipe
-                    if(swipeData.size() > 1) {
+                    if(swipeData.size() > 1) {// adjust to change min swipe length
                         data = setData(swipeData, preSwipe);
                         //clear preSwipe
                         preSwipe.clear();
@@ -306,7 +306,7 @@ public class GameView extends AppCompatActivity {
         if(preSwipe.isEmpty()) {data[0] = Long.toString(0);}
         else{data[0] = Long.toString(swipe.get(0).getTime()-preSwipe.get(preSwipe.size()-1).getTime());}
         //stroke_duration
-        data[1] = Long.toString(swipe.get(0).getTime() - swipe.get(swipe.size()-1).getTime());
+        data[1] = Long.toString(swipe.get(swipe.size()-1).getTime() - swipe.get(0).getTime());
         //start_x
         data[2] = Float.toString(swipe.get(0).getFst());
         //start_y
