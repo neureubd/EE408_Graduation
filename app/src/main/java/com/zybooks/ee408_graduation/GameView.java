@@ -65,6 +65,7 @@ public class GameView extends AppCompatActivity {
         swipeCount = (TextView) findViewById(R.id.swipeCount);
 
         String sessionUser = getIntent().getStringExtra("Username");
+        String gameType = getIntent().getStringExtra("gameType");
 
         bookReady=false;
 
@@ -133,7 +134,7 @@ public class GameView extends AppCompatActivity {
                     //clear swipeData
                     swipeData.clear();
                     //send data via api
-                    sendSwipeData(sessionUser,data);
+                    sendSwipeData(sessionUser,gameType,data);
                     //do what game logic tells us to do
                     Toast.makeText(getApplicationContext(),"Data Collected",Toast.LENGTH_SHORT).show();
                     bookReady=false;
@@ -433,7 +434,8 @@ public class GameView extends AppCompatActivity {
         return dir;
     }
 
-    public void sendSwipeData(String sessionUser, String[] swipeData) {
+    public void sendSwipeData(String sessionUser, String gameType, String[] swipeData) {
+        String callType = "";
         String[] dataHeaders = new String[]{"inter_stroke_time", "stroke_duration", "start_x",
                 "start_y", "stop_x", "stop_y", "direct_e2e_dist",
                 "mean_resultant_length", "direction_enum", "dir_e2e_line",
@@ -445,6 +447,13 @@ public class GameView extends AppCompatActivity {
                 "average_velocity", "median_acc_first5", "midstroke_pressure",
                 "midstroke_area_covered", "midstroke_finger_orientation",
                 "finger_orientation_changed", "phone_orientation"};
+        if(gameType.equals("test")){callType = "test_user";}
+        else if(gameType.equals("enroll")){callType = "enroll_user";}
+        else{
+            Toast.makeText(GameView.this.getApplicationContext(), "Game not made correctly", Toast.LENGTH_LONG).show();
+            callType = "";
+            onBackPressed();
+        }
         JSONObject jsonParams = new JSONObject();
         try {
             // Put username
@@ -455,11 +464,10 @@ public class GameView extends AppCompatActivity {
                 jsonParams.put(dataHeaders[i], swipeData[i]);
             }
 
-            new ApiRequest(GameView.this, baseUrl + "enroll_user", jsonParams) {
+            new ApiRequest(GameView.this, baseUrl + callType, jsonParams) {
                 @Override
                 public void PostCallback(JSONObject jsonObject, VolleyError volleyError) {
                     if(volleyError == null){String errString = jsonObject.optString("error");}
-                    //Toast.makeText(EnrollNewUser.this.getApplicationContext(), "Error: " + errString, Toast.LENGTH_LONG).show();
                 }
             };
         } catch (JSONException e) {

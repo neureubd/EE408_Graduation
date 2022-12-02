@@ -59,6 +59,7 @@ public class EnrollNewUser extends AppCompatActivity {
         }
         Intent intent = new Intent(this, GameView.class);
         intent.putExtra("Username",newUserName);
+        intent.putExtra("gameType", "enroll");
         startActivity(intent);
     }
 }

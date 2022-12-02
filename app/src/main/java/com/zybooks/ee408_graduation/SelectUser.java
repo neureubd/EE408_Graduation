@@ -27,7 +27,6 @@ public class SelectUser extends AppCompatActivity {
     private Button selectPlay;
     private RadioGroup rg1;
     private RadioGroup rg2;
-    //public String[] nameList = new String[6];
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,6 +55,7 @@ public class SelectUser extends AppCompatActivity {
     public void playGame(String userName){
         Intent intent = new Intent(this, GameView.class);
         intent.putExtra("Username",userName);
+        intent.putExtra("gameType", "test");
         startActivity(intent);
     }
 
