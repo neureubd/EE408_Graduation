@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.graphics.Color;
 import android.media.Image;
 import android.os.Bundle;
 import android.view.MotionEvent;
@@ -42,9 +43,9 @@ public class GameView extends AppCompatActivity {
     private TextView swipeCount, goalCount;
     private String swipeStr, targetStr;
     private boolean swipeStarted;
-    private ImageView book1;
+    private ImageView book1, book1Broken;
     private Animation bookUp;
-    private Animation bookDown;
+    private Animation bookDown, brokenDown;
     private Animation arrowDown;
     private ImageView arrow;
     private Animation arrowUp;
@@ -88,15 +89,19 @@ public class GameView extends AppCompatActivity {
         targetStr=""+targetCount;
         goalCount.setText(targetStr);
         book1 = findViewById(R.id.book1);
+        book1Broken = findViewById(R.id.book1Broken);
         arrow = findViewById(R.id.arrow);
         bookUp = AnimationUtils.loadAnimation(this, R.anim.book_anim1);
         arrowUp = AnimationUtils.loadAnimation(this, R.anim.arrow_anim_up);
         bookDown = AnimationUtils.loadAnimation(this, R.anim.book_down_anim);
         arrowDown = AnimationUtils.loadAnimation(this, R.anim.book_down_anim);
+        brokenDown = AnimationUtils.loadAnimation(this, R.anim.broken_down);
         bookUp.setStartOffset(500);
         arrowUp.setStartOffset(500);
+        brokenDown.setStartOffset(500);
         bookDown.setFillAfter(true);
         arrowDown.setFillAfter(true);
+        brokenDown.setFillAfter(true);
 
 
         gameStart.setOnClickListener(new View.OnClickListener() {
@@ -106,6 +111,7 @@ public class GameView extends AppCompatActivity {
                 swipeStr=""+count;
                 swipeCount.setText(swipeStr);
                 fireNewBook();
+                book1Broken.startAnimation(brokenDown);
             }
         });
 
@@ -142,8 +148,6 @@ public class GameView extends AppCompatActivity {
                         preSwipe = swipeData;
                         //clear swipeData
                         swipeData.clear();
-                        //send data via api
-                        sendSwipeData(sessionUser, gameType, data);
                     }else {swipeData.clear();}
                     //do what game logic tells us to do
                     //Toast.makeText(getApplicationContext(),"Data Collected",Toast.LENGTH_SHORT).show();
@@ -156,7 +160,10 @@ public class GameView extends AppCompatActivity {
                 if(cutDir==direction){
                     if(!swipeStarted) {
                         //CUT BOOK
-
+                        book1.setAlpha(0);
+                        arrow.setAlpha(0);
+                        book1Broken.setAlpha(255);
+                        bookReady=false;
                         handler.postDelayed(new Runnable() {
                             @Override
                             public void run() {
@@ -167,11 +174,10 @@ public class GameView extends AppCompatActivity {
                         count = count + 1;
                         swipeStr = "" + count;
                         swipeCount.setText(swipeStr);
+                        //send data via api
+                        sendSwipeData(sessionUser, gameType, data);
                     }
                 }
-            }
-            else{
-
             }
             if(count==targetCount){
                 returnToMainPage();
@@ -192,29 +198,36 @@ public class GameView extends AppCompatActivity {
         if( direc<22.5 && direc > -22.5  && direction==0){
             cutDir=0;
         }
-        else if(direc>22.5 && direc < 67.5  &&direction==1){
+        else if(direc>22.5 && direc < 67.5 && direction==1){
             cutDir=1;
         }
-        else if(direc<112.5 && direc > 67.5  &&direction==2){
+        else if(direc<112.5 && direc > 67.5 && direction==2){
             cutDir=2;
         }
-        else if(direc<157.5 && direc > 112.5  &&direction==3){
+        else if(direc<157.5 && direc > 112.5 && direction==3){
             cutDir=3;
         }
-        else if(direc<-157.5 || direc > 157.5  &&direction==4){
+        else if(direc<-157.5 || direc > 157.5 && direction==4){
             cutDir=4;
         }
-        else if(direc<-112.5 && direc > -157.5  &&direction==5){
+        else if(direc<-112.5 && direc > -157.5 && direction==5){
             cutDir=5;
         }
-        else if(direc<-67.5 && direc > -112.5  &&direction==6){
+        else if(direc<-67.5 && direc > -112.5 && direction==6){
             cutDir=6;
         }
-        else if(direc<-22.5 && direc > -67.5  &&direction==7){
+        else if(direc<-22.5 && direc > -67.5 && direction==7){
             cutDir=7;
         }
         else{
             //OUTPUT INCORRECT SIGNAL
+            book1.setColorFilter(getResources().getColor(R.color.translucent_red));
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    book1.setColorFilter(null);
+                }
+            }, 200);
         }
     }
 
@@ -249,6 +262,9 @@ public class GameView extends AppCompatActivity {
         direction= random.nextInt(8);
         setArrowRotation(direction);
         bookReady=false;
+        book1.setAlpha(255);
+        arrow.setAlpha(255);
+        book1Broken.setAlpha(0);
         book1.startAnimation(bookUp);
         arrow.startAnimation(arrowUp);
         handler.postDelayed(new Runnable() {
