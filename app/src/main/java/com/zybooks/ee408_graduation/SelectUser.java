@@ -44,7 +44,7 @@ public class SelectUser extends AppCompatActivity {
         selectPlay = (Button) findViewById(R.id.selectPlay);
         getUserList();
         selectBack.setOnClickListener(view -> returnToMainPage());
-        selectPlay.setOnClickListener(view -> playGame());
+        selectPlay.setOnClickListener(view ->checkForUser());
 
     }
 
@@ -53,8 +53,9 @@ public class SelectUser extends AppCompatActivity {
         startActivity(intent);
     }
 
-    public void playGame(){
+    public void playGame(String userName){
         Intent intent = new Intent(this, GameView.class);
+        intent.putExtra("Username",userName);
         startActivity(intent);
     }
 
@@ -66,8 +67,8 @@ public class SelectUser extends AppCompatActivity {
     public void checkForUser(){
         RadioButton rb = null;
 
-        if(rg1.getCheckedRadioButtonId() != -1){rb = (RadioButton) rg1.getChildAt(rg1.getCheckedRadioButtonId());}
-        else if(rg2.getCheckedRadioButtonId() != -1){rb = (RadioButton) rg2.getChildAt(rg1.getCheckedRadioButtonId());}
+        if(rg1.getCheckedRadioButtonId() != -1){rb = (RadioButton) findViewById(rg1.getCheckedRadioButtonId());}
+        else if(rg2.getCheckedRadioButtonId() != -1){rb = (RadioButton) findViewById(rg1.getCheckedRadioButtonId());}
         else{
             Toast.makeText(getApplicationContext(), "No User Selected",Toast.LENGTH_LONG).show();
             return;
@@ -76,7 +77,7 @@ public class SelectUser extends AppCompatActivity {
         if (rb.getText().toString().contains("Profile")) {
             enrollNewUser();
         } else {
-            // send user name to game view
+            playGame((String) rb.getText());
         }
     }
 

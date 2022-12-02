@@ -58,6 +58,7 @@ public class EnrollNewUser extends AppCompatActivity {
             e.printStackTrace();
         }
         Intent intent = new Intent(this, GameView.class);
+        intent.putExtra("Username",newUserName);
         startActivity(intent);
     }
 }
