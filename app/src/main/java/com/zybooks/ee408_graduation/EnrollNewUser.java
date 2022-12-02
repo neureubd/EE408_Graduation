@@ -51,7 +51,11 @@ public class EnrollNewUser extends AppCompatActivity {
                 @Override
                 public void PostCallback(JSONObject jsonObject, VolleyError volleyError) {
                     String errString = jsonObject.optString("error");
-                    //Toast.makeText(EnrollNewUser.this.getApplicationContext(), "Error: " + errString, Toast.LENGTH_LONG).show();
+                    if(errString.isEmpty()){}
+                    else{
+                        Toast.makeText(EnrollNewUser.this.getApplicationContext(), "This user already exists", Toast.LENGTH_LONG).show();
+                        returnToMainPage();
+                    }
                 }
             };
         }catch (JSONException e){
