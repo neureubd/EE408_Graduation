@@ -69,6 +69,8 @@ public class GameView extends AppCompatActivity {
 
         bookReady=false;
 
+        //Set target count
+
         targetCount=100;
 
         ImageView book1 = findViewById(R.id.book1);
@@ -369,7 +371,10 @@ public class GameView extends AppCompatActivity {
 
     public float velPoint(int point,List<Swipe<Float,Float,Long,Float,Float,Float>> swipe){
         float vel;
-        if(point == 0){
+        if(swipe.size() == 1){
+            vel = 0;
+        }
+        else if(point == 0){
             vel = disOfTwoPoints(point, point+1, swipe)/(swipe.get(point).getTime()-swipe.get(point+1).getTime());
         }
         else if(point == swipe.size()-1){
