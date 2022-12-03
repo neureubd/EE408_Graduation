@@ -51,6 +51,15 @@
         android:visibility="invisible"
         app:srcCompat="@drawable/red_arrow_png1" />
 
+    <ImageView
+        android:id="@+id/book1Broken"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:scaleX=".4"
+        android:scaleY=".4"
+        android:visibility="invisible"
+        app:srcCompat="@drawable/lyahfgg_cracked" />
+
     <Button
         android:id="@+id/gameStart"
         android:layout_width="wrap_content"
@@ -74,7 +83,7 @@
         android:layout_alignParentRight="true"
         android:layout_marginEnd="70dp"
         android:layout_marginTop="40dp"
-        android:text="swipeCount"
+        android:text=""
         android:textSize="12pt" />
 
     <TextView
