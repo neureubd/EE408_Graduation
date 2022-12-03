@@ -304,9 +304,9 @@ public class GameView extends AppCompatActivity {
         // Not Done: 21,23
         //inter_stroke_time (time between strokes)
         if(preSwipe.isEmpty()) {data[0] = Long.toString(0);}
-        else{data[0] = Long.toString(swipe.get(0).getTime()-preSwipe.get(preSwipe.size()-1).getTime());}
+        else{data[0] = Float.toString((float)(preSwipe.get(preSwipe.size()-1).getTime()-swipe.get(0).getTime())/1000);}
         //stroke_duration
-        data[1] = Long.toString(swipe.get(swipe.size()-1).getTime() - swipe.get(0).getTime());
+        data[1] = Float.toString((float)(swipe.get(swipe.size()-1).getTime() - swipe.get(0).getTime())/1000);
         //start_x
         data[2] = Float.toString(swipe.get(0).getFst());
         //start_y
