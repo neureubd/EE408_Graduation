@@ -107,6 +107,16 @@
         android:text="Swipe across the book in the direction of the arrow!"
         android:textAlignment="center"
         android:textSize="12pt" />
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignEnd="@+id/gameBack"
+        android:layout_alignBottom="@+id/gameBack"
+        android:layout_marginEnd="5dp"
+        android:layout_marginBottom="5dp"
+        app:srcCompat="@drawable/gameBackButton" />
 </RelativeLayout>
 
 
