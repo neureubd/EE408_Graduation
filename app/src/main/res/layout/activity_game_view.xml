@@ -34,6 +34,19 @@
         app:srcCompat="@drawable/bg" />
 
     <ImageView
+        android:id="@+id/scoreBox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="50dp"
+        android:layout_alignTop="@+id/gameBack"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/game_counter_box" />
+
+    <ImageView
         android:id="@+id/book1"
         android:layout_width="100dp"
         android:layout_height="100dp"
@@ -60,7 +73,7 @@
         android:visibility="invisible"
         app:srcCompat="@drawable/lyahfgg_cracked" />
 
-    <Button
+    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/gameStart"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -68,21 +81,25 @@
         android:layout_alignEnd="@+id/gameBack"
         android:layout_alignParentStart="true"
         android:layout_marginStart="21dp"
-        android:layout_marginTop="36dp"
+        android:layout_marginTop="20dp"
         android:layout_marginEnd="-3dp"
-        android:background="#00FFFFFF"
+        android:background="@color/green"
+        android:backgroundTint="@color/green"
         android:text="Start"
         android:textColor="@color/black"
+        app:iconTint="@color/green"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/gameBack" />
+
 
     <TextView
         android:id="@+id/swipeCount"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:layout_marginEnd="70dp"
-        android:layout_marginTop="40dp"
+        android:layout_alignLeft="@+id/scoreBox"
+        android:layout_alignTop="@id/scoreBox"
+        android:layout_marginLeft="5dp"
+        android:layout_marginTop="2dp"
         android:text=""
         android:textSize="12pt" />
 
@@ -90,11 +107,13 @@
         android:id="@+id/goalCount"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/swipeCount"
-        android:layout_alignParentRight="true"
-        android:layout_marginRight="10dp"
+        android:layout_alignRight="@id/scoreBox"
+        android:layout_alignBottom="@id/scoreBox"
+        android:layout_marginRight="2dp"
+        android:layout_marginBottom="1dp"
         android:text="goalCount"
         android:textSize="12pt" />
+
     <TextView
         android:id="@+id/directions"
         android:layout_width="match_parent"
@@ -116,7 +135,7 @@
         android:layout_alignBottom="@+id/gameBack"
         android:layout_marginEnd="5dp"
         android:layout_marginBottom="5dp"
-        app:srcCompat="@drawable/gameBackButton" />
+        app:srcCompat="@drawable/game_back_button" />
 </RelativeLayout>
 
 
