@@ -16,7 +16,6 @@
         android:layout_marginLeft="50dp"
         android:layout_marginTop="45dp"
         android:background="#00FFFFFF"
-        android:textSize="30sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.046"
         app:layout_constraintStart_toStartOf="parent"
@@ -128,7 +127,7 @@
         android:textSize="12pt" />
 
     <ImageView
-        android:id="@+id/imageView"
+        android:id="@+id/backButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignEnd="@+id/gameBack"
