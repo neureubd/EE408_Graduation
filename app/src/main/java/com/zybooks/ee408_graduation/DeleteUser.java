@@ -75,7 +75,6 @@ public class DeleteUser extends AppCompatActivity {
 
     public void getUserList(){ //rename
         String[] nameList = new String[6];
-        String baseUrl = "http://10.0.2.2:5000/";
         new ApiRequest(DeleteUser.this, baseUrl + "get_usernames", new JSONObject()) {
             @Override
             public void PostCallback(JSONObject jsonObject, VolleyError volleyError) {
@@ -138,12 +137,11 @@ public class DeleteUser extends AppCompatActivity {
                 @Override
                 public void PostCallback(JSONObject jsonObject, VolleyError volleyError) {
                     String errString = jsonObject.optString("error");
-                    //Toast.makeText(EnrollNewUser.this.getApplicationContext(), "Error: " + errString, Toast.LENGTH_LONG).show();
+                    getUserList();
                 }
             };
         }catch (JSONException e){
             e.printStackTrace();
         }
-        getUserList();
     }
 }

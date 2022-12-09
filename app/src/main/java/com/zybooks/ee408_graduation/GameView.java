@@ -349,9 +349,10 @@ public class GameView extends AppCompatActivity {
         //direction_enum
         float dir = calcDirectionTwoPoints(0,swipe.size()-1,swipe);
         if(dir >= -Math.PI && dir < (-Math.PI/2)){data[8] = Integer.toString(4);}
-        if(dir <= 0 && dir > (-Math.PI/2)){data[8] = Integer.toString(2);}
-        if(dir > 0 && dir <= (Math.PI/2)){data[8] = Integer.toString(3);}
-        if(dir <= Math.PI && dir > (Math.PI/2)){data[8] = Integer.toString(1);}
+        else if(dir <= 0 && dir > (-Math.PI/2)){data[8] = Integer.toString(2);}
+        else if(dir > 0 && dir <= (Math.PI/2)){data[8] = Integer.toString(3);}
+        else if(dir <= Math.PI && dir > (Math.PI/2)){data[8] = Integer.toString(1);}
+        else {data[8] = Integer.toString(0);}
         //dir_e2e_line
         data[9] = Float.toString(calcDirectionTwoPoints(0,swipe.size()-1,swipe));
         //20p_pairwise_velocity
@@ -443,6 +444,8 @@ public class GameView extends AppCompatActivity {
                         disOfTwoPoints(point - 1, point, swipe) / (swipe.get(point - 1).getTime() - swipe.get(point).getTime())) / 2;
             }
         }
+        if(Float.isInfinite(vel))
+            vel = 0;
         return vel;
     }
     public float accPoint(int point,List<Swipe<Float,Float,Long,Float,Float,Float>> swipe){
@@ -552,11 +555,15 @@ public class GameView extends AppCompatActivity {
                 new ApiRequest(GameView.this, baseUrl + callType, jsonParams) {
                     @Override
                     public void PostCallback(JSONObject jsonObject, VolleyError volleyError) {
-                        Boolean enrollStatus = jsonObject.optBoolean("trained");
-                        if(enrollStatus != null){
-                            Toast.makeText(GameView.this.getApplicationContext(), "Enrollment complete: " + Boolean.toString(enrollStatus), Toast.LENGTH_LONG).show();
+                        if(volleyError == null)
+                        {
+                            boolean enrollStatus = jsonObject.optBoolean("trained");
+                            Toast.makeText(GameView.this.getApplicationContext(), "Enrollment complete: " + enrollStatus, Toast.LENGTH_LONG).show();
                         }
-                        if(volleyError == null){String errString = jsonObject.optString("error");}
+                        else
+                        {
+                            Toast.makeText(getApplicationContext(), "ERROR: " + volleyError.getMessage(), Toast.LENGTH_LONG).show();
+                        }
                     }
                 };
             } catch (JSONException e) {
