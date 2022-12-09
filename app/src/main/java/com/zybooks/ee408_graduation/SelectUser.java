@@ -73,7 +73,6 @@ public class SelectUser extends AppCompatActivity {
             Toast.makeText(getApplicationContext(), "No User Selected",Toast.LENGTH_LONG).show();
             return;
         }
-        // Check for user
         if (rb.getText().toString().contains("Profile")) {
             enrollNewUser();
         } else {
@@ -81,7 +80,7 @@ public class SelectUser extends AppCompatActivity {
         }
     }
 
-    public void getUserList(){ //rename
+    public void getUserList(){
         String[] nameList = new String[6];
         String baseUrl = "http://10.0.2.2:5000/";
         new ApiRequest(SelectUser.this, baseUrl + "get_usernames", new JSONObject()) {
@@ -115,7 +114,6 @@ public class SelectUser extends AppCompatActivity {
         // Profile 6
         if (nameList[5] != "") {((RadioButton) rg2.getChildAt(2)).setText(nameList[5]);}
         else{((RadioButton) rg2.getChildAt(2)).setText("Profile 6");}
-
     }
 
     // The following section of code was taken from https://stackoverflow.com/questions/10425569/radiogroup-with-two-columns-which-have-ten-radiobuttons
@@ -127,7 +125,6 @@ public class SelectUser extends AppCompatActivity {
                 rg2.setOnCheckedChangeListener(null); // remove the listener before clearing so we don't throw that stackoverflow exception(like Vladimir Volodin pointed out)
                 rg2.clearCheck(); // clear the second RadioGroup!
                 rg2.setOnCheckedChangeListener(listener2); //reset the listener
-                Log.e("XXX2", "do the work");
             }
         }
     };
@@ -140,7 +137,6 @@ public class SelectUser extends AppCompatActivity {
                 rg1.setOnCheckedChangeListener(null);
                 rg1.clearCheck();
                 rg1.setOnCheckedChangeListener(listener1);
-                Log.e("XXX2", "do the work");
             }
         }
     };

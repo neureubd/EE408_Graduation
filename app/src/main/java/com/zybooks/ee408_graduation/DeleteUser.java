@@ -55,7 +55,6 @@ public class DeleteUser extends AppCompatActivity {
                 rg2.setOnCheckedChangeListener(null); // remove the listener before clearing so we don't throw that stackoverflow exception(like Vladimir Volodin pointed out)
                 rg2.clearCheck(); // clear the second RadioGroup!
                 rg2.setOnCheckedChangeListener(listener2); //reset the listener
-                Log.e("XXX2", "do the work");
             }
         }
     };
@@ -108,7 +107,6 @@ public class DeleteUser extends AppCompatActivity {
         // Profile 6
         if (nameList[5] != "") {((RadioButton) rg2.getChildAt(2)).setText(nameList[5]);}
         else{((RadioButton) rg2.getChildAt(2)).setText("Profile 6");}
-
     }
 
     public void checkForUser(){

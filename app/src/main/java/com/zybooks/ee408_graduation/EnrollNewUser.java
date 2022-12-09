@@ -77,7 +77,9 @@ public class EnrollNewUser extends AppCompatActivity {
                     if(volleyError == null)
                     {
                         String errString = jsonObject.optString("error");
-                        if(errString.isEmpty()){}
+                        if(errString.isEmpty()){
+
+                        }
                         else{
                             Toast.makeText(EnrollNewUser.this.getApplicationContext(), "This user already exists", Toast.LENGTH_LONG).show();
                             returnToMainPage();
