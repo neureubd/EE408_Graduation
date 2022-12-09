@@ -577,7 +577,6 @@ public class GameView extends AppCompatActivity {
         }
     }
 }
-//Test. - Dalton
 /*
 * Notes for making the game
 * on start button summon book and arrow
